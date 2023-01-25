@@ -1,4 +1,4 @@
-QGIS Plugin to synchronize SQLite databases to Cartodruid Synchronization services at ITACyL
+QGIS Plugin to synchronize SQLite databases to Cartodruid Synchronization services
 ============================
 
 This project contains a QGIS plugin to sincronize the SQlite databases of your project using CartoDruid Synchronization
