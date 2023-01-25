@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2023, ITACyL'
 
 import unittest
 
-from qgis.PyQt.QtGui import QDialogButtonBox, QDialog
+from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 
 from cartodruid_sync_dialog import CartoDruidSyncDialog
 
@@ -48,8 +48,8 @@ class CartoDruidSyncDialogTest(unittest.TestCase):
         result = self.dialog.result()
         self.assertEqual(result, QDialog.Rejected)
 
-if __name__ == "__main__":
-    suite = unittest.makeSuite(CartoDruidSyncDialogTest)
-    runner = unittest.TextTestRunner(verbosity=2)
-    runner.run(suite)
+# if __name__ == "__main__":
+#     suite = unittest.makeSuite(CartoDruidSyncDialogTest)
+#     runner = unittest.TextTestRunner(verbosity=2)
+#     runner.run(suite)
 
