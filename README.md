@@ -50,7 +50,7 @@ Use the command line script `plugin_upload.py`, the script has been modified to 
 variable `QGIS_PLUGIN_CREDENTIALS` with the format `QGIS_PLUGIN_CREDENTIALS=<username>_<password>`.
 
 ```bash
-py .\plugin_upload.py cartodruid_sync.zip
+py .\plugin_upload.py build/cartodruid_sync.zip
 
 ```
 
