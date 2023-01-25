@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/cartodruid_sync" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
