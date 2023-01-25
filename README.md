@@ -37,13 +37,6 @@ You can find the qqis dist packages by typing this in the QGIS python console:
 import qgis; print(qgis)
 ```
 
-# Adss QGIS instalation folder
-
-/usr/lib/python3/dist-packages/qgis/ To get the path from your system, you can start python console in QGIS and type "
-qgis", the origin path of the package will be shown.
-
-https://docs.qgis.org/3.22/en/docs/pyqgis_developer_cookbook/plugins/ide_debugging.html
-
 ## Publish plugin
 
 Use the command line script `plugin_upload.py`, the script has been modified to get the credentials from the
