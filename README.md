@@ -32,6 +32,7 @@ C:/Desarrollo/tools/QGIS 3.6/apps/qgis-ltr/python/qgis/
 ```
 
 You can find the qqis dist packages by typing this in the QGIS python console:
+
 ``` python
 import qgis; print(qgis)
 ```
@@ -50,5 +51,14 @@ variable `QGIS_PLUGIN_CREDENTIALS` with the format `QGIS_PLUGIN_CREDENTIALS=<use
 
 ```bash
 py .\plugin_upload.py cartodruid_sync.zip
+
+```
+
+If "create" is passed as argument to the script, the zip file is created as part of the deployment process. The built
+zip file is left in ´build´ folder.
+
+
+```bash
+py .\plugin_upload.py create
 
 ```
