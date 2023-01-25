@@ -4,13 +4,15 @@
         Authors: A. Pasotti, V. Picavet
         git sha              : $TemplateVCSFormat
 """
-
+import shutil
 import sys
 import getpass
 import xmlrpc.client
+import zipfile
 from optparse import OptionParser
+import os
 
-standard_library.install_aliases()
+# standard_library.install_aliases()
 
 # Configuration
 PROTOCOL = 'https'
@@ -72,6 +74,48 @@ def hide_password(url, start=6):
         url[end_position:])
 
 
+def zip_deploy(deploy_folder, zip_filename):
+    if os.path.exists(zip_filename):
+        os.remove(zip_filename)
+    excluded_folders = ["test", "scripts", "venv", "build"]
+    with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zf:
+        for root, dirs, files in os.walk(deploy_folder):
+            # filter dirs variable inline to filter zip contents
+            dirs[:] = [d for d in dirs if d not in excluded_folders and not d.startswith(".")]
+            # files[:] = [filter files array]
+            for file in files:
+                zf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file),
+                                                                   os.path.join(deploy_folder, '..')))
+
+
+def copy_resources(base_folder, deploy_folder):
+    excluded_folders = ["test", "scripts", "venv", "build"]
+    # copy selected folders and contents to build
+    contents = [f for f in os.listdir(base_folder) if not f.startswith(".") and f not in excluded_folders]
+
+    for path in contents:
+        full_path = os.path.join(base_folder, path)
+        if os.path.isdir(full_path):
+            shutil.copytree(full_path, os.path.join(deploy_folder, path))
+        else:
+            shutil.copy(full_path, os.path.join(deploy_folder, path))
+
+
+def create_zip(base_folder):
+    # create build and deploy folder
+    build_folder = os.path.join(base_folder, "build")
+    if os.path.exists(build_folder):
+        shutil.rmtree(build_folder)
+    os.mkdir(build_folder)
+    deploy_folder = os.path.join(build_folder, "cartodruid_sync")
+    os.mkdir(deploy_folder)
+
+    copy_resources(base_folder, deploy_folder)
+    zip_filename = os.path.join(build_folder, "cartodruid_sync.zip")
+    zip_deploy(deploy_folder, zip_filename)
+    return zip_filename
+
+
 if __name__ == "__main__":
     parser = OptionParser(usage="%prog [options] plugin.zip")
     parser.add_option(
@@ -96,16 +140,27 @@ if __name__ == "__main__":
     if not options.port:
         options.port = PORT
     if not options.username:
-        # interactive mode
-        username = getpass.getuser()
-        print("Please enter user name [%s] :" % username, end=' ')
+        # try getting user/pass from env variable QGIS_PLUGIN_CREDENTIALS
+        credentials = os.environ["QGIS_PLUGIN_CREDENTIALS"]
+        if credentials:
+            options.username, options.password = credentials.split("_")
+        else:  # interactive mode
+            username = getpass.getuser()
+            print("Please enter user name [%s] :" % username, end=' ')
 
-        res = input()
-        if res != "":
-            options.username = res
-        else:
-            options.username = username
-    if not options.password:
+            res = input()
+            if res != "":
+                options.username = res
+            else:
+                options.username = username
+    if not options.password and not credentials:
         # interactive mode
         options.password = getpass.getpass()
+    if args[0] == "create":
+        # create zip file before sending
+        zip_file = create_zip(os.getcwd())
+        print(f"Created zip file {zip_file}")
+        args[0] = zip_file
+
+
     main(options, args)

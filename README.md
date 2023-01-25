@@ -15,3 +15,40 @@ strengths, offline work since it allows technicians to carry all the information
 device and carry out tasks without the need for coverage.
 
 To see a full list of features visit http://www.cartodruid.es.
+
+## Configuring dev environment
+
+In the QGIS reference explains how to configure your IDE to refer to QGIS python packages. In this case I prefer to
+use (a .pth file)[# https://docs.python.org/3/library/site.html] to append the QGIS site-package directory to the env
+PYTTHONPATH variable. Create a qgis.pth file and copy it into `project/venv/lib/<python.version>/site-packages/` if
+you're working on linux or  `project/venv/Lib/site-packages/` if you're in windows, with this content:
+
+``` shell
+# Adss QGIS instalation folder
+/usr/lib/python3/dist-packages/qgis/
+
+#Or in windows something like this:
+C:/Desarrollo/tools/QGIS 3.6/apps/qgis-ltr/python/qgis/
+```
+
+You can find the qqis dist packages by typing this in the QGIS python console:
+``` python
+import qgis; print(qgis)
+```
+
+# Adss QGIS instalation folder
+
+/usr/lib/python3/dist-packages/qgis/ To get the path from your system, you can start python console in QGIS and type "
+qgis", the origin path of the package will be shown.
+
+https://docs.qgis.org/3.22/en/docs/pyqgis_developer_cookbook/plugins/ide_debugging.html
+
+## Publish plugin
+
+Use the command line script `plugin_upload.py`, the script has been modified to get the credentials from the
+variable `QGIS_PLUGIN_CREDENTIALS` with the format `QGIS_PLUGIN_CREDENTIALS=<username>_<password>`.
+
+```bash
+py .\plugin_upload.py cartodruid_sync.zip
+
+```

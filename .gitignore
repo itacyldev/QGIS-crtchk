@@ -1,0 +1,7 @@
+*.log
+*.pyc
+*.bak
+*.back
+venv
+virtualenv
+build
