@@ -1,6 +1,6 @@
 import logging
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from qgis.core import (
     QgsProject,
@@ -85,6 +85,11 @@ class WksConfig:
     username: str
     apikey: str
     endpoint: str
+    """
+    List of tables used to sync data. This list is used to configure update/delete triggers.
+    Each item contains the pair (table_name, update_field)
+    """
+    table_list: list = field(default_factory=lambda: [])
 
     def __json__(self):
         return self.__dict__

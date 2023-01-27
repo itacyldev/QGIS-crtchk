@@ -14,6 +14,7 @@ def create_test_db():
     return tmp_file
 
 
+
 def create_random_table(db_file):
     table_name = utl.random_string(10)
     query = f"""
@@ -30,5 +31,4 @@ def create_random_table(db_file):
     finally:
         if conn:
             conn.close()
-
 

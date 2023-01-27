@@ -25,7 +25,7 @@ hasProcessingProvider=no
 # Tags are comma separated with spaces allowed
 tags=python
 
-homepage=http://www.itacyl.es
+homepage=https://github.com/itacyldev/QGIS-crtchk.git
 category=Plugins
 icon=icon.png
 # experimental flag
