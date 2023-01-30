@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>704</width>
-    <height>392</height>
+    <width>703</width>
+    <height>451</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,25 +19,15 @@
      <x>10</x>
      <y>20</y>
      <width>681</width>
-     <height>361</height>
+     <height>411</height>
     </rect>
    </property>
-   <widget class="QWidget" name="config_list">
-    <widget class="QTableWidget" name="config_table">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>90</y>
-       <width>421</width>
-       <height>192</height>
-      </rect>
-     </property>
-    </widget>
+   <widget class="QWidget" name="conf_db">
     <widget class="QPushButton" name="btn_add">
      <property name="geometry">
       <rect>
-       <x>560</x>
-       <y>90</y>
+       <x>260</x>
+       <y>190</y>
        <width>89</width>
        <height>25</height>
       </rect>
@@ -46,11 +36,11 @@
       <string>Add</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="btn_del">
+    <widget class="QPushButton" name="btn_remove">
      <property name="geometry">
       <rect>
        <x>560</x>
-       <y>120</y>
+       <y>190</y>
        <width>89</width>
        <height>25</height>
       </rect>
@@ -59,54 +49,157 @@
       <string>Remove</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_8">
+    <widget class="QPushButton" name="btn_next">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>370</y>
+       <width>89</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Continuar</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_add_all">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>220</y>
+       <width>89</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add All</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>20</y>
-       <width>531</width>
+       <y>0</y>
+       <width>571</width>
        <height>17</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="text">
-      <string>Listado de configuraciones de sincronización</string>
+      <string>Selecciona tu BD SQLite desde fichero o a partir de una capa del proyecto</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QRadioButton" name="rad_file">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>250</x>
-       <y>320</y>
-       <width>89</width>
-       <height>25</height>
+       <x>40</x>
+       <y>90</y>
+       <width>181</width>
+       <height>23</height>
       </rect>
      </property>
      <property name="text">
-      <string>Aceptar</string>
+      <string>Seleccionar fichero</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QRadioButton" name="rad_layer">
      <property name="geometry">
       <rect>
-       <x>350</x>
-       <y>320</y>
-       <width>89</width>
-       <height>25</height>
+       <x>40</x>
+       <y>40</y>
+       <width>181</width>
+       <height>23</height>
       </rect>
      </property>
      <property name="text">
-      <string>Cancelar</string>
+      <string>Seleccionar capa</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_17">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>150</y>
+       <width>581</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Seleccionar qué tablas quieres sincronizar para detectar los triggers de actualización</string>
+     </property>
+    </widget>
+    <widget class="QgsFileWidget" name="fileWidget">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>90</y>
+       <width>469</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="dialogTitle">
+      <string>Select SQLite database to synchronize</string>
+     </property>
+     <property name="filter">
+      <string>*.sqlite</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lstw_tableList">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>190</y>
+       <width>181</width>
+       <height>161</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lstw_selectionList">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>190</y>
+       <width>181</width>
+       <height>161</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QDialogButtonBox" name="btn_cancel_1">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>370</y>
+       <width>87</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel</set>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="combo_layer_name">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>40</y>
+       <width>281</width>
+       <height>25</height>
+      </rect>
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="config_add">
+   <widget class="QWidget" name="conf_cred">
     <widget class="QWidget" name="formLayoutWidget">
      <property name="geometry">
       <rect>
@@ -118,99 +211,65 @@
      </property>
      <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Select your SQLite database</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QgsFileWidget" name="fileWidget">
-        <property name="dialogTitle">
-         <string>Select SQLite database to synchronize</string>
-        </property>
-        <property name="filter">
-         <string>*.sqlite</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Workspace Identifier</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="wksId"/>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>User Id</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="1" column="1">
        <widget class="QLineEdit" name="userName"/>
       </item>
-      <item row="4" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>User apikey</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="2" column="1">
        <widget class="QLineEdit" name="userApikey"/>
       </item>
-      <item row="5" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Sync endpoint</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="3" column="1">
        <widget class="QLineEdit" name="endpoint"/>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="wksId"/>
-      </item>
-      <item row="6" column="1">
-       <widget class="QLineEdit" name="table_list"/>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Table list</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>
-    <widget class="QLabel" name="label_7">
+    <widget class="QLabel" name="label_18">
      <property name="geometry">
       <rect>
        <x>50</x>
        <y>20</y>
-       <width>531</width>
+       <width>571</width>
        <height>17</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="text">
-      <string>Creación de configuración de sincronización</string>
+      <string>Indica el workspace de sincronización, credenciales y endpoint de envío</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="btn_accept">
      <property name="geometry">
       <rect>
-       <x>250</x>
-       <y>320</y>
+       <x>470</x>
+       <y>370</y>
        <width>89</width>
        <height>25</height>
       </rect>
@@ -219,17 +278,30 @@
       <string>Aceptar</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="btn_prev">
      <property name="geometry">
       <rect>
-       <x>350</x>
-       <y>320</y>
+       <x>370</x>
+       <y>370</y>
        <width>89</width>
        <height>25</height>
       </rect>
      </property>
      <property name="text">
-      <string>Cancelar</string>
+      <string>Atrás</string>
+     </property>
+    </widget>
+    <widget class="QDialogButtonBox" name="btn_cancel_2">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>370</y>
+       <width>87</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel</set>
      </property>
     </widget>
    </widget>

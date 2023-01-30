@@ -23,26 +23,24 @@
 """
 import logging
 import os.path
-import shutil
-import tempfile
-from zipfile import ZipFile
 
+from PyQt5.QtCore import QTimer, QEventLoop
+from PyQt5.QtWidgets import QMessageBox, QApplication
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 # Import the code for the dialog
-from qgis.core import QgsMessageLog, Qgis, QgsProject
-
-from .cartodruid_sync_dialog import CartoDruidSyncDialog
-from .crtsync_client import CrtDrdSyncClient, ApiClientListener
-
-# Initialize Qt resources from file resources.py
-# from qgis._core import QgsMessageLog, Qgis
+from qgis.core import QgsMessageLog, Qgis, QgsProject, QgsVectorLayer, QgsApplication, QgsTask, QgsDataSourceUri
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
+from . import db_manage as dbm
+from .plugin_settings import resolve_path
+from .dialog_conf_sync import CartoDruidConfSyncDialog
+from .crtsync_client import ApiClientListener
+from .sync_task import SyncQTask
 from . import plugin_settings as stt
 
 
@@ -81,9 +79,13 @@ class CartoDruidSync:
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
 
-        ## custom properties
-        self.listener = SyncMessageListener()
-        self.plugin_conf = None
+        self.listener = SyncListener(iface)
+        # init dlg variables
+        self.dlg = None
+        self.conf_dlg = None
+
+        # list of layers target of the synchronization
+        self.sync_layers = None
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -166,9 +168,7 @@ class CartoDruidSync:
             self.iface.addToolBarIcon(action)
 
         if add_to_menu:
-            self.iface.addPluginToMenu(
-                self.menu,
-                action)
+            self.iface.addPluginToMenu(self.menu, action)
 
         self.actions.append(action)
 
@@ -176,116 +176,122 @@ class CartoDruidSync:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        icon_path = ':/plugins/cartodruid_sync/icon.png'
-        self.add_action(
-            icon_path,
-            text=self.tr(u'CartoDruid Sync'),
-            callback=self.run,
-            parent=self.iface.mainWindow())
+        self.add_action(resolve_path('icon.png'),
+                        text=self.tr(u'Configure Sync'),
+                        callback=self.run_config,
+                        parent=self.iface.mainWindow())
+        self.add_action(resolve_path("assets/reload.png"),
+                        text=self.tr(u'Synchronize'),
+                        callback=self.run_sync,
+                        parent=self.iface.mainWindow())
 
         # will be set False in run()
-        self.first_start = True
+        self.plugin_conf = stt.read_config(QgsProject.instance(), self.listener)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
-            self.iface.removePluginMenu(
-                self.tr(u'&CartoDruid Synchronizer'),
-                action)
+            # self.iface.removePluginMenu(self.tr(u'&CartoDruid Synchronizer'), action)
+            self.iface.removePluginMenu(self.menu, action)
             self.iface.removeToolBarIcon(action)
 
-    def run(self):
+    def run_config(self):
         """Run method that performs all the real work"""
 
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start == True:
-            self.plugin_conf = stt.read_config(QgsProject.instance(), self.listener)
-            print("cargada configuracion {}".format(self.plugin_conf))
-            self.dlg = CartoDruidSyncDialog()
-            self._initDialog()
-            self.first_start = False
-
+        if self.dlg is None:
+            # first exec
+            self.dlg = CartoDruidConfSyncDialog(listener=self.listener)
+        current_project = QgsProject.instance()
         # show the dialog
+        wks_config = stt.read_config(current_project, self.listener)
+        self.dlg.load_settings(wks_config)
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
 
-        # See if OK was pressed
-        if result:
-            # get dialog info
-            wks = self.dlg.wksId.text()
-            username = self.dlg.userName.text()
-            apikey = self.dlg.userApikey.text()
-            endpoint = self.dlg.endpoint.text()
-            print(f"{wks} {apikey} {endpoint}")
-            file_path = self.dlg.fileWidget.filePath()
-            print(f"{file_path}")
+        if not result:
+            return
+        wks_config = self.dlg.get_wks_config()
+        # create empty db
+        if not os.path.exists(wks_config.db_file):
+            self.listener.info("Empty database created in {}".format(wks_config.db_file))
+            dbm.create_empty_db(wks_config.db_file)
 
-            # update plugin config
-            self.plugin_conf.endpoints = [endpoint]
-            self.plugin_conf.wks_configs = [stt.WksConfig(file_path, wks, username, apikey, endpoint)]
-            stt.write_endpoints(QgsProject.instance(), self.plugin_conf.endpoints, self.listener)
-            stt.write_sync_configs(QgsProject.instance(), self.plugin_conf.wks_configs, self.listener)
+        self.listener.info("{}".format(wks_config))
+        stt.write_sync_configs(current_project, wks_config, self.listener)
 
-            api = CrtDrdSyncClient(endpoint, {"wks": wks, "user": username, "password": apikey})
-            api.set_listener(self.listener)
-            try:
-                downloaded = api.exec(file_path)
-                QgsMessageLog.logMessage("Downloaded database: {}".format(downloaded))
-            except:
-                logging.exception("Error while trying to synchronized")
-                raise BaseException("Error during sync process.")
-            # uncompress downloded file
-            uncompressed_db = self._extract(downloaded, tempfile.gettempdir())
-            # backup original file
-            QgsMessageLog.logMessage("Backing up current data base to {}".format(file_path + ".backup"))
-            shutil.copy(file_path, file_path + ".backup")
+        QMessageBox.question(None, self.tr("Info"), self.tr("Configuración modificada, recuerde guardar el proyecto "
+                                                            "para almacenar los cambios."), QMessageBox.Ok)
 
-            # copy downloaded file to origin
-            shutil.copy(uncompressed_db, file_path)
+    def run_sync(self):
+        wks_config = stt.read_config(QgsProject.instance(), self.listener)
+        if not wks_config:
+            QMessageBox.question(None, self.tr("Info"), self.tr("No hay ninguna configuración de sincronización"),
+                                 QMessageBox.Ok)
+            return
+        self.listener.info("Lanzando tarea a ejecución")
 
-            self.iface.messageBar().pushMessage("CartoDruid Sync", "Synchronization finished successfully!",
-                                                level=Qgis.Info)
+        # SyncWorker.run_task(wks_config, self.listener)
+        task = SyncQTask("CartoDruid Sync Task", wks_config, self.listener)
+        try:
+            QgsApplication.taskManager().addTask(task)
+        except:
+            QgsMessageLog.logMessage("Error al lanzar la tarea", level=Qgis.Critical)
 
-    def _extract(self, file, dest_folder):
-        zref = ZipFile(file, 'r')
-        # sqlites in the file
-        lst_db_files = list((filter(lambda x: x.filename.endswith(".sqlite"), zref.filelist)))
-        if len(lst_db_files) == 0:
-            raise BaseException("The downloaded file {} contains no database.".format(file))
-        if len(lst_db_files) > 1:
-            raise BaseException("The downloaded file {} contains more than one database.".format(file))
+        wait_for_task(task)
+        #
+        # while task.status() == QgsTask.Running:
+        #     QTimer.singleShot(1000, QApplication.processEvents)
+        #
+        # if task.status() == QgsTask.Complete:
+        #     QgsMessageLog.logMessage("tarea finalizada", level=Qgis.Info)
+        # else:
+        #     QgsMessageLog.logMessage("tarea cancelada", level=Qgis.Info)
+        # print(task.status)
 
-        # get files from zip file
-        db_filename = lst_db_files[0].filename
-
-        with ZipFile(file, 'r') as zip_ref:
-            zip_ref.extractall(dest_folder)
-
-        db_filename = os.path.join(dest_folder, db_filename)
-        # check exists
-        if not os.path.exists(db_filename):
-            raise BaseException(
-                "Something went wrong during the zip extraction, the expected file {} doesn't exists".format(
-                    db_filename))
-        return db_filename
-
-    def _initDialog(self):
-        # Load values from settings
-        if self.plugin_conf.wks_configs:
-            wks_conf = self.plugin_conf.wks_configs[0]
-            self.dlg.fileWidget.setFilePath(wks_conf.db_file)
-            self.dlg.wksId.setText(wks_conf.wks)
-            self.dlg.userName.setText(wks_conf.username)
-            self.dlg.userApikey.setText(wks_conf.apikey)
-            self.dlg.endpoint.setText(wks_conf.endpoint)
-        elif self.plugin_conf.endpoints:
-            self.dlg.endpoint.setText(self.plugin_conf.endpoints[0])
+        # run_sync(wks_config, self.listener)
+        # if not self.sync_layers:
+        #     self.add_vector_layer(wks_config.db_file)
+        # self.listener.on_success("Synchronization finished successfully!");
 
 
-class SyncMessageListener(ApiClientListener):
+def wait_for_task(task, timeout=60):
+    loop = QEventLoop()
+    task.taskCompleted.connect(loop.quit)
+    task.taskTerminated.connect(loop.quit)
+    QTimer.singleShot(timeout * 1000, loop.quit)
+    loop.exec_()
+
+
+def add_vector_layer(file_path, listener):
+    listener.info("Obtaining db geo layers for db {}".format(file_path))
+    geo_layers = dbm.get_geo_layers(file_path)
+    listener.info("Geo layers found in [{}]: {}".format(file_path, geo_layers))
+    # add layers to project
+    sync_layers = []
+
+    current_layers = QgsProject.instance().mapLayers().values()
+
+    for table_name in geo_layers:
+        # new_layer = QgsVectorLayer("dbname='{}' table='{}' (geom) sql=".format(file_path, table_name), table_name, "spatialite")
+        layer_found = next(filter(lambda l: l.name() == table_name, current_layers), None)
+        if not layer_found:
+            new_layer = QgsVectorLayer('{}|layername={}'.format(file_path, table_name), table_name)
+            QgsProject.instance().addMapLayer(new_layer)
+            listener.info("Layer {} add to project.".format(table_name))
+            sync_layers.append(new_layer)
+        else:
+            layer_found.reload()
+            listener.info("Layer {} reloaded.".format(table_name))
+
+
+
+class SyncListener(ApiClientListener):
+
+    def __init__(self, iface):
+        self.iface = iface
 
     def notify(self, message):
         logging.info(message)
@@ -295,7 +301,23 @@ class SyncMessageListener(ApiClientListener):
         logging.info(message)
         QgsMessageLog.logMessage(message, level=Qgis.Info)
 
+    def exception(self, message):
+        print(message)
+        logging.exception(message)
+        QgsMessageLog.logMessage(message, level=Qgis.Critical)
+
     def error(self, message):
         print(message)
         logging.error(message)
         QgsMessageLog.logMessage(message, level=Qgis.Critical)
+
+    def on_success(self, wks_config):
+        add_vector_layer(wks_config.db_file, self)
+        self.iface.messageBar().pushMessage("CartoDruid Sync", QCoreApplication.translate('CartoDruidSync',
+                                                                                          "Sincronización finalizada con éxito"),
+                                            level=Qgis.Info)
+
+    def on_error(self):
+        self.iface.messageBar().pushMessage("CartoDruid Sync", QCoreApplication.translate('CartoDruidSync',
+                                                                                          "Se produjo un error durante la sincronización, consule la consola."),
+                                            level=Qgis.Error)

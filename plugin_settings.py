@@ -1,11 +1,11 @@
+import json
 import logging
+import os
 import traceback
 from dataclasses import dataclass, field
 
 from qgis.core import (
-    QgsProject,
-    QgsSettings)
-import json
+    QgsProject)
 
 """
 Read and writing of plugin settings
@@ -28,7 +28,7 @@ def _read_object_from_settings(proj: QgsProject, setting_id, setting_name, liste
         listener.error(
             "Error while trying to parse {} configuration object: [{}].\nThe setting will be removed from project.".format(
                 setting_name, settings_str))
-        proj.removeEntry(PLUGIN_ID, setting_id)
+        # proj.removeEntry(PLUGIN_ID, setting_id)
 
     return settings_str
 
@@ -57,20 +57,24 @@ def read_sync_configs(proj: QgsProject, listener=None):
     if not json_str:
         return None
 
-    settings_list = None
+    wks_config = None
     settings_dict = json.loads(json_str)
     try:
-        settings_list = [WksConfig(**stt_dict) for stt_dict in settings_dict]
-    except:
-        listener.error("Error while trying to read sync configurations")
-        proj.removeEntry(PLUGIN_ID, CRTSYNC_CONFIGS)
+        wks_config = WksConfig(**settings_dict)
+    except Exception:
+        traceback.print_exc()
+        listener.exception("Error while trying to read sync configurations")
+        # proj.removeEntry(PLUGIN_ID, CRTSYNC_CONFIGS)
 
-    return settings_list
+    return wks_config
 
 
 def write_sync_configs(proj: QgsProject, wks_configs, listener=None):
     json_str = json.dumps(wks_configs, default=vars)
+    print(proj)
+    print(json_str)
     _write_object_to_settings(proj, CRTSYNC_CONFIGS, json_str, listener)
+    proj.write()
 
 
 class PluginConfig:
@@ -98,8 +102,21 @@ class WksConfig:
 def read_config(proj: QgsProject, listener):
     conf = PluginConfig()
     conf.endpoints = read_endpoints(proj, listener)
-    conf.wks_configs = read_sync_configs(proj, listener)
-    return conf
+    conf.wksConfigs = read_sync_configs(proj, listener)
+    listener.info("Configuration found: {}".format(conf.wksConfigs))
+    if conf.wksConfigs is None:
+        return None
+    else:
+        return conf.wksConfigs if conf.wksConfigs else None
+
+
+def plugin_folder():
+    return os.path.dirname(os.path.realpath(__file__))
+
+
+def resolve_path(path):
+    print("project path: {}".format(plugin_folder()))
+    return os.path.join(plugin_folder(), path)
 
 
 if __name__ == '__main__':
