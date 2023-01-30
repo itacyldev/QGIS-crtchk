@@ -311,4 +311,4 @@ class SyncListener(ApiClientListener):
     def on_error(self):
         self.iface.messageBar().pushMessage("CartoDruid Sync", QCoreApplication.translate('CartoDruidSync',
                                                                                           "Se produjo un error durante la sincronización, consule la consola."),
-                                            level=Qgis.Error)
+                                            level=Qgis.Critical)

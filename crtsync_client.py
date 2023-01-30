@@ -97,9 +97,9 @@ class CrtDrdSyncClient:
         if response.status_code != 200:
             raise BaseException(
                 "Error occurred while trying to connect to resource uri {}: {}".format(sync_uri, response.content()))
-        # if content["state"] != "FINISHED":
-        #     raise BaseException(
-        #         "The synchronization {} finished in an invalid state:  {}".format(sync_uri, content))
+        if content["state"] != "FINISHED":
+            raise BaseException(
+                "The synchronization {} finished in an invalid state:  {}".format(sync_uri, content))
 
     def download_file(self, sync_uri):
         url = sync_uri.replace("syncro", "syncroFile")

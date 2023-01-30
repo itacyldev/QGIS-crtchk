@@ -1,4 +1,5 @@
 import logging
+import random
 import sqlite3
 
 
@@ -242,11 +243,15 @@ def get_geo_layers(db_file):
             conn.close()
     return table_list
 
+def create_random_table(conn):
+    query = "create table ttt_{} ( id number)".format(random.randint())
+    conn.executescript(query)
 
 def create_empty_db(file_path):
     conn = None
     try:
         conn = sqlite3.connect(file_path)
+
     finally:
         if conn:
             conn.close()
