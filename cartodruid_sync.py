@@ -309,6 +309,7 @@ class SyncListener(ApiClientListener):
 
     def on_success(self, wks_config):
         add_vector_layer(wks_config.db_file, self)
+        QgsMessageLog.logMessage("Sincronización finalizada con éxito", level=Qgis.Info)
         self.iface.messageBar().pushMessage("CartoDruid Sync", QCoreApplication.translate('CartoDruidSync',
                                                                                           "Sincronización finalizada con éxito"),
                                             level=Qgis.Info)
