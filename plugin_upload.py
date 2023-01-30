@@ -77,7 +77,7 @@ def hide_password(url, start=6):
 def zip_deploy(deploy_folder, zip_filename):
     if os.path.exists(zip_filename):
         os.remove(zip_filename)
-    excluded_folders = ["test", "scripts", "venv", "build"]
+    excluded_folders = ["test", "scripts", "venv", "build", "__pycache__"]
     with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zf:
         for root, dirs, files in os.walk(deploy_folder):
             # filter dirs variable inline to filter zip contents
