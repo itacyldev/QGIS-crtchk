@@ -241,23 +241,14 @@ class CartoDruidSync:
             QgsMessageLog.logMessage("Error al lanzar la tarea", level=Qgis.Critical)
 
         wait_for_task(task)
-        #
-        # while task.status() == QgsTask.Running:
-        #     QTimer.singleShot(1000, QApplication.processEvents)
-        #
-        # if task.status() == QgsTask.Complete:
-        #     QgsMessageLog.logMessage("tarea finalizada", level=Qgis.Info)
-        # else:
-        #     QgsMessageLog.logMessage("tarea cancelada", level=Qgis.Info)
-        # print(task.status)
-
-        # run_sync(wks_config, self.listener)
-        # if not self.sync_layers:
-        #     self.add_vector_layer(wks_config.db_file)
-        # self.listener.on_success("Synchronization finished successfully!");
-
 
 def wait_for_task(task, timeout=60):
+    """
+    active wait without blocking UI window
+    :param task:
+    :param timeout:
+    :return:
+    """
     loop = QEventLoop()
     task.taskCompleted.connect(loop.quit)
     task.taskTerminated.connect(loop.quit)

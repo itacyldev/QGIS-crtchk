@@ -138,7 +138,7 @@ def create_insert_trigger(conn, table_name, re_create=True):
     # list cols to find the update column
     list_cols = f"SELECT name FROM PRAGMA_TABLE_INFO('{table_name}')"
     found_cols = [col[0].lower() for col in query_for_list(conn, list_cols)]
-    col_names = [col for col in found_cols if col in UPDATE_COL_NAMES]
+    col_names = [col for col in found_cols if col in INSERT_COL_NAMES]
     if not col_names:
         raise Exception(
             f"""Cannot find a possible insert column for table {table_name}. No column with names {INSERT_COL_NAMES}. "

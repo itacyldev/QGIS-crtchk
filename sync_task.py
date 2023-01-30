@@ -97,10 +97,6 @@ class SyncQTask(QgsTask):
 
     def run(self) -> bool:
         try:
-            self.listener.info("run run")
-            filename = "/tmp/example.txt"
-            with open(filename, "w") as file:
-                file.write("Hello World!")
             run_sync(self.wks_config, self.listener)
             return True
         except:
