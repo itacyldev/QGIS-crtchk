@@ -41,7 +41,8 @@ def run_sync(wks_conf: WksConfig, listener):
         # downloaded = '/media/gus/data/cartodruid/ribera2022.zip' # mocking
         downloaded = api.exec(wks_conf.db_file)
         listener.info("Downloaded database: {}".format(downloaded))
-    except:
+    except Exception as e:
+        print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
         listener.error("Error while trying to synchronized")
         raise BaseException("Error during sync process.")
     # uncompress downloaded file

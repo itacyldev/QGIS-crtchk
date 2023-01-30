@@ -111,12 +111,12 @@ def read_config(proj: QgsProject, listener):
 
 
 def plugin_folder():
-    return os.path.dirname(os.path.realpath(__file__))
+    return os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
 
 
 def resolve_path(path):
     print("project path: {}".format(plugin_folder()))
-    return os.path.join(plugin_folder(), path)
+    return os.path.join(plugin_folder(), path).replace("\\", "/")
 
 
 if __name__ == '__main__':

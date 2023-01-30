@@ -78,7 +78,6 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         username = self.userName.text()
         apikey = self.userApikey.text()
         endpoint = self.endpoint.text()
-        file_path = self.fileWidget.filePath()
+        file_path = self.fileWidget.filePath().replace('\\', '/')
 
         return stt.WksConfig(file_path, wks, username, apikey, endpoint)
-

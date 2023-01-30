@@ -6,11 +6,18 @@ import time
 
 import requests
 
+from .plugin_settings import resolve_path
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 """
 Crtdrd synchronization client
 """
+
+CA_FILE = resolve_path("assets/cacert.pem")
+
+if not os.path.exists(CA_FILE):
+    raise Exception(f"Invalid CA file path: {CA_FILE}")
 
 
 class ApiClientListener:
@@ -67,7 +74,7 @@ class CrtDrdSyncClient:
         url = self.endpoint + "cnt/rest/syncro/"
         file_params = {"contentFile": open(file, 'rb')}
         logging.info("Starting synchronization against url {}".format(url))
-        response = requests.post(url, files=file_params, headers=self.credentials)
+        response = requests.post(url, files=file_params, headers=self.credentials, verify=False)
         location = response.headers.get('location')
 
         if response.status_code != 200:
@@ -78,7 +85,7 @@ class CrtDrdSyncClient:
         return location
 
     def get_sync_status(self, sync_uri, return_response=False):
-        response = requests.get(sync_uri, headers=self.credentials)
+        response = requests.get(sync_uri, headers=self.credentials, verify=False)
         return response, response.json() if return_response else response
 
     def _check_status(self, sync_uri):
@@ -103,7 +110,7 @@ class CrtDrdSyncClient:
 
     def download_file(self, sync_uri):
         url = sync_uri.replace("syncro", "syncroFile")
-        response = requests.get(url, headers=self.credentials)
+        response = requests.get(url, headers=self.credentials, verify=False)
         if response.status_code != 200:
             raise BaseException(
                 "Error occurred while trying to connect to resource uri {}: {}".format(sync_uri, response.content))
@@ -116,8 +123,7 @@ class CrtDrdSyncClient:
     def finish_sync(self, sync_uri):
         headers = dict(self.credentials)
         headers['Content-type'] = 'application/json'
-        response = requests.put(sync_uri, data=json.dumps({}), headers=headers)
+        response = requests.put(sync_uri, data=json.dumps({}), headers=headers, verify=False)
         if response.status_code != 200:
             raise BaseException(
                 "Error occurred while trying to connect to resource uri {}: {}".format(sync_uri, response.content))
-
