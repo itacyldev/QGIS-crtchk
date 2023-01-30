@@ -31,10 +31,12 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 # Import the code for the dialog
 from qgis.core import QgsMessageLog, Qgis, QgsProject, QgsVectorLayer, QgsApplication, QgsTask, QgsDataSourceUri
+#
+# logging.basicConfig(level=logging.INFO,
+#                     format='%(asctime)s - %(message)s',
+#                     datefmt='%Y-%m-%d %H:%M:%S')
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
+LOGGER = logging.getLogger('crtsyn')
 
 from . import db_manage as dbm
 from .plugin_settings import resolve_path
@@ -285,22 +287,24 @@ class SyncListener(ApiClientListener):
         self.iface = iface
 
     def notify(self, message):
-        logging.info(message)
         QgsMessageLog.logMessage(message, level=Qgis.Info)
+        LOGGER.info(message)
 
     def info(self, message):
-        logging.info(message)
         QgsMessageLog.logMessage(message, level=Qgis.Info)
+        print("LOGGER: {}".format(LOGGER))
+        if LOGGER.isEnabledFor(logging.INFO):
+            LOGGER.info(message)
 
     def exception(self, message):
         print(message)
-        logging.exception(message)
         QgsMessageLog.logMessage(message, level=Qgis.Critical)
+        LOGGER.exception(message)
 
     def error(self, message):
         print(message)
-        logging.error(message)
         QgsMessageLog.logMessage(message, level=Qgis.Critical)
+        LOGGER.error(message)
 
     def on_success(self, wks_config):
         add_vector_layer(wks_config.db_file, self)
@@ -310,5 +314,5 @@ class SyncListener(ApiClientListener):
 
     def on_error(self):
         self.iface.messageBar().pushMessage("CartoDruid Sync", QCoreApplication.translate('CartoDruidSync',
-                                                                                          "Se produjo un error durante la sincronización, consule la consola."),
-                                            level=Qgis.Error)
+                                                                                          "Se produjo un error durante la sincronización, consulte la consola."),
+                                            level=Qgis.Critical)
