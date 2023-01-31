@@ -8,8 +8,6 @@ import requests
 
 from .plugin_settings import resolve_path
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-
 """
 Crtdrd synchronization client
 """
@@ -43,7 +41,7 @@ class CrtDrdSyncClient:
 
     def exec(self, file: str):
         # location files to upload
-        self._listener.notify("Initializing synchronization process, sending file {}".format(file))
+        self._listener.notify("Starting synchronization process, sending file {}".format(file))
         sync_uri = self._create_sync(file)
 
         # push sync resources
@@ -68,20 +66,27 @@ class CrtDrdSyncClient:
     def _create_sync(self, file):
         if not os.path.exists(file) or not os.path.isfile(file):
             msg = "Invalid db file path. File doesn't exists: {}".format(file)
-            logging.exception(msg)
+            self._listener.exception(msg)
             raise BaseException(msg)
 
         url = self.endpoint + "cnt/rest/syncro/"
         file_params = {"contentFile": open(file, 'rb')}
-        logging.info("Starting synchronization against url {}".format(url))
-        response = requests.post(url, files=file_params, headers=self.credentials, verify=False)
-        location = response.headers.get('location')
+        self._listener.info("Starting synchronization against url {}".format(url))
+
+        try:
+            response = requests.post(url, files=file_params, headers=self.credentials, verify=False)
+            location = response.headers.get('location')
+        except:
+            error_msg = f"Error occurred while trying to connect to resource uri {url}. " \
+                        f"Check the endpoint value in wks configuration."
+            self._listener.exception(error_msg)
+            raise BaseException(error_msg)
 
         if response.status_code != 200:
-            msg = "Error occurred while trying to connect to resource uri {}. " \
-                  "Status:{} content: {}".format(url, response.status_code, response.text)
-            logging.exception(msg)
-            raise BaseException(msg)
+            error_msg = f"Error occurred while trying to connect to resource uri {url}. Status:{response.status_code} " \
+                        f"content: {response.text}. Check the endpoint value in wks configuration."
+            self._listener.exception(error_msg)
+            raise BaseException(error_msg)
         return location
 
     def get_sync_status(self, sync_uri, return_response=False):

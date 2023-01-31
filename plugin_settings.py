@@ -71,8 +71,6 @@ def read_sync_configs(proj: QgsProject, listener=None):
 
 def write_sync_configs(proj: QgsProject, wks_configs, listener=None):
     json_str = json.dumps(wks_configs, default=vars)
-    print(proj)
-    print(json_str)
     _write_object_to_settings(proj, CRTSYNC_CONFIGS, json_str, listener)
     proj.write()
 
@@ -93,7 +91,7 @@ class WksConfig:
     List of tables used to sync data. This list is used to configure update/delete triggers.
     Each item contains the pair (table_name, update_field)
     """
-    table_list: list = field(default_factory=lambda: [])
+    table_filter: list = field(default_factory=lambda: None)
 
     def __json__(self):
         return self.__dict__
@@ -115,7 +113,6 @@ def plugin_folder():
 
 
 def resolve_path(path):
-    print("project path: {}".format(plugin_folder()))
     return os.path.join(plugin_folder(), path).replace("\\", "/")
 
 

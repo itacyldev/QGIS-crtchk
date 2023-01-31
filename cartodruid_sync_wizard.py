@@ -148,12 +148,10 @@ class CartoDruidSyncDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def __select_layer(self):
         # disable file widget
-        print("asdfasfas layer")
         self.fileWidget.setEnabled(False)
         self.combo_layer_name.setEnabled(True)
 
     def __select_file(self):
-        print("asdfasfas file")
         self.fileWidget.setEnabled(True)
         self.combo_layer_name.setEnabled(False)
 

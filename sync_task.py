@@ -34,7 +34,8 @@ def _create_db_triggers(db_file, listener):
 
 def run_sync(wks_conf: WksConfig, listener):
     api = CrtDrdSyncClient(wks_conf.endpoint,
-                           {"wks": wks_conf.wks, "user": wks_conf.username, "password": wks_conf.apikey})
+                           {"wks": wks_conf.wks, "user": wks_conf.username, "password": wks_conf.apikey},
+                           listener=listener)
     api.set_listener(listener)
 
     try:
@@ -113,6 +114,7 @@ class SyncQTask(QgsTask):
         self.listener.info("Synchronization task canceled by user.")
         super().cancel()
 
+
 class SyncWorker(QRunnable):
     def __init__(self, wks_config, listener=None):
         super().__init__()
@@ -130,6 +132,7 @@ class SyncWorker(QRunnable):
         runnable = SyncWorker(wks_config, listener)
         thread_pool.start(runnable)
         sys.exit(app.exec_())
+
 
 class SyncPythonWorker:
     def __init__(self, wks_config, listener=None):

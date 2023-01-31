@@ -21,8 +21,9 @@
  *                                                                         *
  ***************************************************************************/
 """
-import logging
 import os.path
+import sys
+import traceback
 
 from PyQt5.QtCore import QTimer, QEventLoop
 from PyQt5.QtWidgets import QMessageBox
@@ -32,19 +33,18 @@ from qgis.PyQt.QtWidgets import QAction
 # Import the code for the dialog
 from qgis.core import QgsMessageLog, Qgis, QgsProject, QgsVectorLayer, QgsApplication
 
+from . import db_manage as dbm
+from . import plugin_settings as stt
+from .crtsync_client import ApiClientListener
+from .dialog_conf_sync import CartoDruidConfSyncDialog
+from .plugin_settings import resolve_path
+from .sync_task import SyncQTask
+
+
 #
 # logging.basicConfig(level=logging.INFO,
 #                     format='%(asctime)s - %(message)s',
 #                     datefmt='%Y-%m-%d %H:%M:%S')
-
-LOGGER = logging.getLogger('crtsyn')
-
-from . import db_manage as dbm
-from .plugin_settings import resolve_path
-from .dialog_conf_sync import CartoDruidConfSyncDialog
-from .crtsync_client import ApiClientListener
-from .sync_task import SyncQTask
-from . import plugin_settings as stt
 
 
 class CartoDruidSync:
@@ -183,7 +183,7 @@ class CartoDruidSync:
                         text=self.tr(u'Configure Sync'),
                         callback=self.run_config,
                         parent=self.iface.mainWindow())
-        self.add_action(resolve_path("assets/reload.png"),
+        self.add_action(resolve_path("assets/synchronize.png"),
                         text=self.tr(u'Synchronize'),
                         callback=self.run_sync,
                         parent=self.iface.mainWindow())
@@ -289,23 +289,17 @@ class SyncListener(ApiClientListener):
 
     def notify(self, message):
         QgsMessageLog.logMessage(message, level=Qgis.Info)
-        LOGGER.info(message)
 
     def info(self, message):
         QgsMessageLog.logMessage(message, level=Qgis.Info)
-        print("LOGGER: {}".format(LOGGER))
-        if LOGGER.isEnabledFor(logging.INFO):
-            LOGGER.info(message)
-
-    def exception(self, message):
-        print(message)
-        QgsMessageLog.logMessage(message, level=Qgis.Critical)
-        LOGGER.exception(message)
 
     def error(self, message):
-        print(message)
         QgsMessageLog.logMessage(message, level=Qgis.Critical)
-        LOGGER.error(message)
+        print(message)
+
+    def exception(self, message):
+        QgsMessageLog.logMessage(message, level=Qgis.Critical)
+        QgsMessageLog.logMessage(repr(traceback.format_exception(*sys.exc_info())), level=Qgis.Critical)
 
     def on_success(self, wks_config):
         add_vector_layer(wks_config.db_file, self)
