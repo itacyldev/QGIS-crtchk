@@ -14,8 +14,8 @@ display of virtual layers based on images with EXIF metadata. These open formats
 strengths, offline work since it allows technicians to carry all the information necessary for their work on their
 device and carry out tasks without the need for coverage.
 
-To see a full list of features visit http://www.CartoDruid.es you can also ask us questions to consult us how to use
-CartoDruid in your project in our forum https://foro.CartoDruid.es/.
+To see a full list of features visit http://www.cartodruid.es you can also ask us questions to consult us how to use
+CartoDruid in your project in our forum https://foro.cartodruid.es/.
 
 ## Using the plugin
 

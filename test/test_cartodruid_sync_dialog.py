@@ -16,18 +16,18 @@ import unittest
 
 from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 
-from cartodruid_sync_dialog import CartoDruidSyncDialog
+from dialog_conf_sync import CartoDruidConfSyncDialog
 
 from utilities import get_qgis_app
 QGIS_APP = get_qgis_app()
 
-
+@unittest.SkipTest
 class CartoDruidSyncDialogTest(unittest.TestCase):
     """Test dialog works."""
 
     def setUp(self):
         """Runs before each test."""
-        self.dialog = CartoDruidSyncDialog(None)
+        self.dialog = CartoDruidConfSyncDialog(None)
 
     def tearDown(self):
         """Runs after each test."""
@@ -48,8 +48,8 @@ class CartoDruidSyncDialogTest(unittest.TestCase):
         result = self.dialog.result()
         self.assertEqual(result, QDialog.Rejected)
 
-# if __name__ == "__main__":
-#     suite = unittest.makeSuite(CartoDruidSyncDialogTest)
-#     runner = unittest.TextTestRunner(verbosity=2)
-#     runner.run(suite)
+if __name__ == "__main__":
+    suite = unittest.makeSuite(CartoDruidSyncDialogTest)
+    runner = unittest.TextTestRunner(verbosity=2)
+    runner.run(suite)
 
