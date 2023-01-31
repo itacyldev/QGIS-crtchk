@@ -39,9 +39,8 @@ def run_sync(wks_conf: WksConfig, listener):
     api.set_listener(listener)
 
     try:
-        # downloaded = '/media/gus/data/cartodruid/test.sqlite'
-        downloaded = '/media/gus/data/cartodruid/ribera2022.zip' # mocking
-        # downloaded = api.exec(wks_conf.db_file)
+        # downloaded = '/media/gus/data/cartodruid/ribera2022.zip' # mocking
+        downloaded = api.exec(wks_conf.db_file)
         listener.info("Downloaded database: {}".format(downloaded))
 
         # uncompress downloaded file

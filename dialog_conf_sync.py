@@ -60,12 +60,16 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         self.__initGui()
 
     def __initGui(self):
+        # go to first screen
+        self.__go_wks_config()
         # bind actions to ui components
         self.btn_next.clicked.connect(self.__go_table_filter)
         self.btn_prev.clicked.connect(self.__go_wks_config)
-        print("table_filter")
         self.dlg_table_filter = TableFilterScreen(dialog=self, listener=self.listener)
-        print("able....{}".format(self.dlg_table_filter))
+
+
+    def go_config(self):
+        self.__go_wks_config()
 
     def __go_wks_config(self):
         self.stackedWidget.setCurrentIndex(0)

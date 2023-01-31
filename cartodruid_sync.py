@@ -205,6 +205,8 @@ class CartoDruidSync:
         if self.dlg is None:
             # first exec
             self.dlg = CartoDruidConfSyncDialog(listener=self.listener)
+        self.dlg.go_config()
+
         current_project = QgsProject.instance()
         # show the dialog
         wks_config = stt.read_config(current_project, self.listener)

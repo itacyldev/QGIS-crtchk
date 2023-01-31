@@ -72,10 +72,11 @@ class TableFilterScreen:
         is_checked = table_filter is not None
         self.dlg.chk_apply_filter.setChecked(is_checked)
         print(f"Table filter found: {table_filter}")
+        # load table_names into selection combo
         if table_filter and len(table_filter) > 0:
-            # load table_names
-            for table_name in table_filter:
-                self.dlg.lstw_selectionList.addItem(QListWidgetItem(table_name))
+            self.__add_tables_to_selection(table_filter)
+            # for table_name in table_filter:
+            #     self.dlg.lstw_selectionList.addItem(QListWidgetItem(table_name))
 
     def __add_selected(self):
         # get selected tables and check if some of them don't have the trigger and ask to add them
