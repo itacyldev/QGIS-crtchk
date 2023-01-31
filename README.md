@@ -70,7 +70,7 @@ You can find the QGIS dist packages by typing this in the QGIS python console:
 import qgis; print(qgis)
 ```
 
-## Publish plugin
+## Publishing plugin
 
 Use the command line script `plugin_upload.py`, the script has been modified to get the credentials from the
 variable `QGIS_PLUGIN_CREDENTIALS` with the format `QGIS_PLUGIN_CREDENTIALS=<username>_<password>`.
