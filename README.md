@@ -37,7 +37,7 @@ the corresponding `update_date` is modified to current timestamp. The Sync plugi
 and `after update`) on every table of the downloaded database that has this kind of column. To detect these columns, a
 list of 'magick nambes' is used `f_update, update_date, mod_date, f_actualizacion, f_actuacion, f_modificacion`.
 
-![](/media/gus/workspace/wpy/QGIS-crtchk/assets/dialog_wks_config.png)
+![](assets/dialog_wks_config.png)
 
 **Filtering tables**
 
@@ -47,7 +47,7 @@ Table filtering screen** to restrict the tables to include in the project. To us
 first time to have a copy of remote tables in local database and then press the "reload tables" to list tables. 
 Then add tables to selection combo using 'add' and 'add all' buttons.
 
-![](/media/gus/workspace/wpy/QGIS-crtchk/assets/dialog_table_filter.png)
+![](assets/dialog_table_filter.png)
 
 ## Configuring dev environment
 
