@@ -39,26 +39,27 @@ def run_sync(wks_conf: WksConfig, listener):
     api.set_listener(listener)
 
     try:
-        # downloaded = '/media/gus/data/cartodruid/ribera2022.zip' # mocking
-        downloaded = api.exec(wks_conf.db_file)
+        # downloaded = '/media/gus/data/cartodruid/test.sqlite'
+        downloaded = '/media/gus/data/cartodruid/ribera2022.zip' # mocking
+        # downloaded = api.exec(wks_conf.db_file)
         listener.info("Downloaded database: {}".format(downloaded))
+
+        # uncompress downloaded file
+        uncompressed_db = _extract(downloaded, tempfile.gettempdir())
+
+        # add triggers to register changes
+        _create_db_triggers(uncompressed_db, listener)
+
+        # backup original file
+        listener.info("Backing up current data base to {}".format(wks_conf.db_file + ".backup"))
+        shutil.copy(wks_conf.db_file, wks_conf.db_file + ".backup")
+
+        # copy downloaded file to origin
+        listener.info("Replacing layer with downloaded file: {}".format(wks_conf.db_file))
+        shutil.copy(uncompressed_db, wks_conf.db_file)
     except Exception as e:
-        print(f"{type(e).__name__} at line {e.__traceback__.tb_lineno} of {__file__}: {e}")
-        listener.error("Error while trying to synchronized")
+        listener.exception("Error during sync process.")
         raise BaseException("Error during sync process.")
-    # uncompress downloaded file
-    uncompressed_db = _extract(downloaded, tempfile.gettempdir())
-
-    # add triggers to register changes
-    _create_db_triggers(uncompressed_db, listener)
-
-    # backup original file
-    listener.info("Backing up current data base to {}".format(wks_conf.db_file + ".backup"))
-    shutil.copy(wks_conf.db_file, wks_conf.db_file + ".backup")
-
-    # copy downloaded file to origin
-    listener.info("Replacing layer with downloaded file: {}".format(wks_conf.db_file))
-    shutil.copy(uncompressed_db, wks_conf.db_file)
 
 
 def _extract(file, dest_folder):

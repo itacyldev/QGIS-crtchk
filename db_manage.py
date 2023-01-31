@@ -14,14 +14,19 @@ table_list_select = "SELECT name FROM {schema_table} WHERE type='table' and not 
 
 def is_spatialite_table(table_name):
     table_name = table_name.lower()
-    if table_name in ['sqlite_master', 'elementarygeometries', 'spatialindex', 'spatial_ref_sys', 'spatial_ref_sys_aux',
+    if table_name in ['sqlite_master', 'networks', 'elementarygeometries', 'spatialindex', 'spatial_ref_sys', 'spatial_ref_sys_aux',
                       'spatialite_history', 'sql_statements_log', 'sqlite_sequence', 'topologies', 'data_licenses']:
         return True
     return 'geometry' in table_name or 'location' in table_name or 'coverages' in table_name
     # idx_layer1_geometry_rowid, 'idx_layer1_geometry', 'idx_layer1_geometry_node', 'idx_layer1_geometry_parent'
 
 
-def get_table_list(conn, filter_schema_tables=True):
+def get_table_list(conn=None, db_file=None, filter_schema_tables=True):
+    close_conn = False
+    if conn is None:
+        conn = sqlite3.connect(db_file)
+        close_conn = True
+
     # use sqlite_master
     schema_tables = ["sqlite_master", "sqlite_schema"]
     table_list = []
@@ -32,10 +37,14 @@ def get_table_list(conn, filter_schema_tables=True):
             table_list = [row[0] for row in results]
             if filter_schema_tables:
                 table_list = [table_name for table_name in table_list if not is_spatialite_table(table_name)]
+
             return table_list
         except:
             logging.exception()
             logging.warning(f"Couldn't query table list using table [{table_name}].")
+        finally:
+            if close_conn and conn:
+                conn.close()
 
     raise Exception("No se han podido consultar las tablas de la bd")
 
@@ -99,7 +108,7 @@ def create_update_trigger(conn, table_name, re_create=True):
     # drop existing trigger
     if re_create and has_update_trigger(conn, table_name):
         drop_trigger(conn, UPDATE_TRIGGER_NAME.format(table_name))
-        
+
     # list cols to find the update column
     list_cols = f"SELECT name FROM PRAGMA_TABLE_INFO('{table_name}')"
     found_cols = [col[0].lower() for col in query_for_list(conn, list_cols)]
@@ -126,11 +135,13 @@ INSERT_TRIGGER = """
 
 INSERT_COL_NAMES = ["f_insert", "insert_date", "ins_date", "f_insercion", "f_creacion"]
 
+
 def has_insert_trigger(conn, table_name):
     trigger_name = INSERT_TRIGGER_NAME.format(table_name)
     query = f"select * from sqlite_master where type = 'trigger' and tbl_name = '{table_name}' and name = '{trigger_name}' "
     result = query_for_list(conn, query)
     return len(result) > 0
+
 
 def create_insert_trigger(conn, table_name, re_create=True):
     if re_create and has_insert_trigger(conn, table_name):
@@ -149,7 +160,6 @@ def create_insert_trigger(conn, table_name, re_create=True):
     trigger_sql = INSERT_TRIGGER.format(table_name=table_name, insert_column=insert_column,
                                         trigger_name=INSERT_TRIGGER_NAME.format(table_name))
     conn.executescript(trigger_sql)
-
 
 
 def setup_db_triggers(db_file, script):
@@ -212,7 +222,6 @@ def updatable_tables(db_file):
     updatable_tables = []
     try:
         table_list = get_table_list(conn)
-        geo_tables = get_geo_layers(db_file)
         for table_name in table_list:
             is_updatable = has_update_col(conn, table_name)
             if is_updatable:
@@ -243,9 +252,11 @@ def get_geo_layers(db_file):
             conn.close()
     return table_list
 
+
 def create_random_table(conn):
     query = "create table ttt_{} ( id number)".format(random.randint())
     conn.executescript(query)
+
 
 def create_empty_db(file_path):
     conn = None

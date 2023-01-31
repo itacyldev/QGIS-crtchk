@@ -260,16 +260,20 @@ def wait_for_task(task, timeout=60):
     loop.exec_()
 
 
-def add_vector_layer(file_path, listener):
-    listener.info("Obtaining db geo layers for db {}".format(file_path))
-    geo_layers = dbm.get_geo_layers(file_path)
-    listener.info("Geo layers found in [{}]: {}".format(file_path, geo_layers))
+def add_vector_layer(wks_config, listener):
+    file_path = wks_config.db_file
+    listener.info("Obtaining tables and layers for db {}".format(file_path))
+    table_list = dbm.get_table_list(db_file=file_path)
+    if wks_config.table_filter:
+        table_list = [tbl for tbl in table_list if tbl not in wks_config.table_filter]
+    # table_list = dbm.get_geo_layers(file_path)
+    listener.info("Geo layers found in [{}]: {}".format(file_path, table_list))
     # add layers to project
     sync_layers = []
 
     current_layers = QgsProject.instance().mapLayers().values()
 
-    for table_name in geo_layers:
+    for table_name in table_list:
         # new_layer = QgsVectorLayer("dbname='{}' table='{}' (geom) sql=".format(file_path, table_name), table_name, "spatialite")
         layer_found = next(filter(lambda l: l.name() == table_name, current_layers), None)
         if not layer_found:
@@ -302,13 +306,14 @@ class SyncListener(ApiClientListener):
         QgsMessageLog.logMessage(repr(traceback.format_exception(*sys.exc_info())), level=Qgis.Critical)
 
     def on_success(self, wks_config):
-        add_vector_layer(wks_config.db_file, self)
+        add_vector_layer(wks_config, self)
         QgsMessageLog.logMessage("Sincronización finalizada con éxito", level=Qgis.Info)
         self.iface.messageBar().pushMessage("CartoDruid Sync", QCoreApplication.translate('CartoDruidSync',
                                                                                           "Sincronización finalizada con éxito"),
                                             level=Qgis.Info)
 
     def on_error(self):
+        QgsMessageLog.logMessage("Se produjo un error durante la sincronización", level=Qgis.Critical)
         self.iface.messageBar().pushMessage("CartoDruid Sync", QCoreApplication.translate('CartoDruidSync',
                                                                                           "Se produjo un error durante la sincronización, consulte la consola."),
                                             level=Qgis.Critical)
