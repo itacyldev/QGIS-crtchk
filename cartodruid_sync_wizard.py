@@ -67,8 +67,8 @@ class CartoDruidSyncDialog(QtWidgets.QDialog, FORM_CLASS):
             self.__preload_data(self.wks_config)
 
         # bind actions to ui components
-        self.btn_next.clicked.connect(self.__go_credentials)
-        self.btn_prev.clicked.connect(self.__go_select_db)
+        self.btn_next.clicked.connect(self.__go_table_filter)
+        self.btn_prev.clicked.connect(self.__go_wks_config)
 
         self.btn_accept.clicked.connect(self.accept)
 
@@ -140,10 +140,10 @@ class CartoDruidSyncDialog(QtWidgets.QDialog, FORM_CLASS):
     def __remove_selected(self):
         pass
 
-    def __go_credentials(self):
+    def __go_table_filter(self):
         self.stackedWidget.setCurrentIndex(1)
 
-    def __go_select_db(self):
+    def __go_wks_config(self):
         self.stackedWidget.setCurrentIndex(0)
 
     def __select_layer(self):

@@ -111,7 +111,7 @@
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="btn_table_filter">
+    <widget class="QPushButton" name="btn_next">
      <property name="geometry">
       <rect>
        <x>380</x>
@@ -198,7 +198,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="btn_back">
+    <widget class="QPushButton" name="btn_prev">
      <property name="geometry">
       <rect>
        <x>480</x>

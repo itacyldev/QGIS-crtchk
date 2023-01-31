@@ -200,7 +200,6 @@ class CartoDruidSync:
 
     def run_config(self):
         """Run method that performs all the real work"""
-
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.dlg is None:
@@ -264,8 +263,9 @@ def add_vector_layer(wks_config, listener):
     file_path = wks_config.db_file
     listener.info("Obtaining tables and layers for db {}".format(file_path))
     table_list = dbm.get_table_list(db_file=file_path)
+    print(f"table filter: {wks_config.table_filter}")
     if wks_config.table_filter:
-        table_list = [tbl for tbl in table_list if tbl not in wks_config.table_filter]
+        table_list = [tbl for tbl in table_list if tbl in wks_config.table_filter]
     # table_list = dbm.get_geo_layers(file_path)
     listener.info("Geo layers found in [{}]: {}".format(file_path, table_list))
     # add layers to project

@@ -28,6 +28,7 @@ from PyQt5.QtWidgets import QMessageBox
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
 
+from .dialog_table_filter import TableFilterScreen
 from . import plugin_settings as stt
 from .plugin_settings import WksConfig
 
@@ -56,6 +57,26 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         self.selection_list = None
         self.plugin_confs = None
 
+        self.__initGui()
+
+    def __initGui(self):
+        # bind actions to ui components
+        self.btn_next.clicked.connect(self.__go_table_filter)
+        self.btn_prev.clicked.connect(self.__go_wks_config)
+        print("table_filter")
+        self.dlg_table_filter = TableFilterScreen(dialog=self, listener=self.listener)
+        print("able....{}".format(self.dlg_table_filter))
+
+    def __go_wks_config(self):
+        self.stackedWidget.setCurrentIndex(0)
+
+    def __go_table_filter(self):
+        messages = self.validate()
+        if messages:
+            QMessageBox.question(None, "Error en los datos", "\n".join(messages), QMessageBox.Ok)
+            return
+        self.stackedWidget.setCurrentIndex(1)
+
     def load_settings(self, wks_config: WksConfig):
         """
         Load sync configuration into dialog dialog widgets
@@ -71,12 +92,19 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         self.endpoint.setText(wks_config.endpoint)
         self.fileWidget.setFilePath(wks_config.db_file)
 
+        self.dlg_table_filter.load_settings(wks_config)
+
     def accept(self):
         messages = self.validate()
         if messages:
             QMessageBox.question(None, "Error en los datos", "\n".join(messages), QMessageBox.Ok)
             return
         super().accept()
+
+    def close(self):
+        print("cerrandoasdfasf")
+        self.__go_wks_config()
+        super().close()
 
     def validate(self):
         wks_config = self.get_wks_config()
@@ -108,5 +136,6 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         apikey = self.userApikey.text()
         endpoint = self.endpoint.text()
         file_path = self.fileWidget.filePath().replace('\\', '/')
+        table_filter = self.dlg_table_filter.get_table_filter()
 
-        return stt.WksConfig(file_path, wks, username, apikey, endpoint)
+        return stt.WksConfig(file_path, wks, username, apikey, endpoint, table_filter=table_filter)
