@@ -25,14 +25,15 @@ import os
 import sqlite3
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QListWidgetItem, QMessageBox
-from qgis.PyQt import QtWidgets
+from PyQt5.QtWidgets import QListWidgetItem
 from qgis.PyQt import uic
-from qgis.core import QgsProject, QgsVectorLayer
 
-from .plugin_settings import resolve_path
-from . import db_manage as dbm
-from . import plugin_settings as stt
+if os.environ.get("TEST_RUNNING", 0):
+    import db_manage as dbm
+    from plugin_settings import resolve_path
+else:
+    from . import db_manage as dbm
+    from .plugin_settings import resolve_path
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 # FORM_CLASS, _ = uic.loadUiType(os.path.join(

@@ -28,9 +28,14 @@ from PyQt5.QtWidgets import QMessageBox
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
 
-from .dialog_table_filter import TableFilterScreen
-from . import plugin_settings as stt
-from .plugin_settings import WksConfig
+if os.environ.get("TEST_RUNNING", 0):
+    from dialog_table_filter import TableFilterScreen
+    import plugin_settings as stt
+    from plugin_settings import WksConfig
+else:
+    from .dialog_table_filter import TableFilterScreen
+    from . import plugin_settings as stt
+    from .plugin_settings import WksConfig
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 # FORM_CLASS, _ = uic.loadUiType(os.path.join(
