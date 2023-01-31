@@ -22,7 +22,9 @@
  ***************************************************************************/
 """
 import os
+from urllib.parse import urlparse
 
+from PyQt5.QtWidgets import QMessageBox
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
 
@@ -68,6 +70,33 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         self.userApikey.setText(wks_config.apikey)
         self.endpoint.setText(wks_config.endpoint)
         self.fileWidget.setFilePath(wks_config.db_file)
+
+    def accept(self):
+        messages = self.validate()
+        if messages:
+            QMessageBox.question(None, "Error en los datos", "\n".join(messages), QMessageBox.Ok)
+            return
+        super().accept()
+
+    def validate(self):
+        wks_config = self.get_wks_config()
+        messages = []
+        for attribute, info_msg in [("wks", "identificador workspace"), ("username", "Nombre de usuario"),
+                                    ("apikey", "apikey"), ("endpoint", "endpoint"),
+                                    ("db_file", "fichero de la bd")]:
+            value = getattr(wks_config, attribute)
+            if not value:
+                messages.append(f"El campo {info_msg} es obligatorio.")
+        # check endpoint format
+        try:
+            result = urlparse(wks_config.endpoint)
+            if not all([result.scheme, result.netloc]):
+                raise Exception("Invalid URL")
+        except Exception:
+            messages.append("El campo endpoint tiene un formato incorrecto.")
+
+        print("asdfasfasfasfas")
+        return messages
 
     def get_wks_config(self):
         """
