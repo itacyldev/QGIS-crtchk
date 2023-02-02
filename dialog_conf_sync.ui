@@ -124,6 +124,29 @@
       <string>Table filter</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="btn_help_wks">
+     <property name="geometry">
+      <rect>
+       <x>560</x>
+       <y>10</y>
+       <width>41</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset theme="help">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="table_filter">
     <widget class="QListWidget" name="lstw_selectionList">
@@ -240,8 +263,8 @@
     <widget class="QPushButton" name="btn_help">
      <property name="geometry">
       <rect>
-       <x>550</x>
-       <y>54</y>
+       <x>560</x>
+       <y>10</y>
        <width>41</width>
        <height>31</height>
       </rect>

@@ -24,9 +24,10 @@
 import os
 from urllib.parse import urlparse
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QDialog, QTextEdit
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
+from qgis.core import QgsApplication
 
 if os.environ.get("TEST_RUNNING", 0):
     from dialog_table_filter import TableFilterScreen
@@ -70,8 +71,33 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         # bind actions to ui components
         self.btn_next.clicked.connect(self.__go_table_filter)
         self.btn_prev.clicked.connect(self.__go_wks_config)
+        self.btn_help_wks.clicked.connect(self.__open_help_dialog)
+        self.__create_help_dialog()
         self.dlg_table_filter = TableFilterScreen(dialog=self, listener=self.listener)
 
+    def __create_help_dialog(self):
+        dialog = QDialog()
+        dialog.setFixedSize(475, 300)
+        text_edit = QTextEdit()
+        text_edit.setReadOnly(True)
+        # get current user language to find proper info.
+        lang = QgsApplication.instance().locale()
+        if lang not in ["en", "es"]:  # TODO: make this dynamic
+            lang = "en"
+        html_file = stt.resolve_path(f"i18n/wks_help.{lang}.html")
+
+        with open(html_file, "r") as file:
+            help_content = file.read().replace("\n", "")
+
+        text_edit.insertHtml(help_content)
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(text_edit)
+        dialog.setLayout(layout)
+        dialog.setModal(True)
+        self.help_dialog = dialog
+
+    def __open_help_dialog(self):
+        self.help_dialog.show()
 
     def go_config(self):
         self.__go_wks_config()
