@@ -24,8 +24,10 @@
 import os
 import sqlite3
 
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QListWidgetItem
+from PyQt5.QtWidgets import QListWidgetItem, QDialog, QTextEdit
 from qgis.PyQt import uic
 
 if os.environ.get("TEST_RUNNING", 0):
@@ -41,28 +43,62 @@ else:
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'cartodruid_sync_wizard.ui'))
 
+ICONS = {
+    "empty": QIcon(resolve_path("assets/transparent.png")),
+    "bolt": QIcon(resolve_path("assets/lightning-bolt-24.png")),
+    "time": QIcon(resolve_path("assets/time-8-24")),
+}
+
 
 class TableFilterScreen:
     def __init__(self, dialog, listener=None):
         """Constructor."""
         self.dlg = dialog
         self.listener = listener
-
-        self.__initGui()
+        self.__create_help_dialog()
+        self.__connect_actions()
 
         self.wks_config = None
         self.table_list = None
         self.selection_list = None
         self.plugin_confs = None
 
-    def __initGui(self):
-
+    def __connect_actions(self):
         # connect actions
         self.dlg.btn_add.clicked.connect(self.__add_selected)
         self.dlg.btn_add_all.clicked.connect(self.__add_all)
         self.dlg.btn_remove.clicked.connect(self.__remove_selected)
         self.dlg.btn_reload.clicked.connect(self.reload_tables)
         self.dlg.chk_apply_filter.clicked.connect(self.__enable_form_fields)
+        self.dlg.btn_help.clicked.connect(self.__show_help_dialog)
+
+    def __create_help_dialog(self):
+        dialog = QDialog()
+        dialog.setFixedSize(475, 300)
+        text_edit = QTextEdit()
+        text_edit.setReadOnly(True)
+        text_edit.insertHtml("""
+        <p>Esta pantalla permite seleccionar qué tablas quieres añadir a tu proyecto. Por defecto todas las tablas de la SQLite se añadirán al proyecto actual, pero si solo quieres añadir algunos (por ejemplo para excluir tablas no geográficas), selecciónalas en la lista de la derecha.
+        <p>Los iconos que anotan los nombres de las tablas indican los siguiente:</p>
+        <ul>
+            <li><img src='{time}'/>: Indica que en la tabla existe una columna para anotar la fecha de modificación del registro.</li>
+            <li><img src='{bolt}'/>: Indica que la tabla tiene creado un trigger para detección de cambios. Existe un trigger after update que actualiza la columna de fecha de registro.</li>
+        </ul>
+        """.format(bolt=resolve_path("assets/lightning-bolt-24.png"), time=resolve_path("assets/time-8-24")))
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(text_edit)
+        dialog.setLayout(layout)
+        dialog.setModal(True)
+
+        # Establece el tamaño mínimo y máximo del layout para que se ajuste al tamaño del dialog
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
+
+        self.help_dialog = dialog
+
+    def __show_help_dialog(self):
+        self.help_dialog.show()
 
     def load_settings(self, wks_config):
         is_filter_checked = wks_config is not None and wks_config.table_filter is not None
@@ -147,11 +183,13 @@ class TableFilterScreen:
     #     self.combo_layer_name.setEnabled(False)
 
     def reload_tables(self):
-        file_path = self.dlg.fileWidget.filePath().replace('\\', '/')
+        self.dlg.lstw_tableList.clear()
+        file_path = self.dlg.fileWidget.filePath()
         if not file_path:
             self.dlg.lstw_tableList.clear()
             self.dlg.lstw_selectionList.clear()
             return
+        file_path = file_path.replace('\\', '/')
         # leer las tablas de la BD
         conn = sqlite3.connect(file_path)
         try:
@@ -161,16 +199,44 @@ class TableFilterScreen:
             # check if tablas has an update trigger
             for name in table_names:
                 has_trigger = dbm.has_update_trigger(conn, name)
+                has_update_col = dbm.get_update_col(conn, name)
                 self.table_list.append((name, has_trigger))
-                icon = QIcon(resolve_path("assets/check-mark-16.png")) if has_trigger else QIcon(
-                    resolve_path("assets/x-mark-16.png"))
-                self.dlg.lstw_tableList.addItem(QListWidgetItem(icon, name))
+                item, widget = self.__create_list_item(self.dlg.lstw_tableList, name, has_trigger, has_update_col)
+                self.dlg.lstw_tableList.addItem(item)
+                self.dlg.lstw_tableList.setItemWidget(item, widget)
+
         finally:
             if conn:
                 conn.close()
+
+    def __create_list_item(self, list_widget, name, has_trigger, has_update_coll):
+        icon1 = ICONS["bolt"] if has_trigger else ICONS["empty"]
+        icon2 = ICONS["time"] if has_update_coll else ICONS["empty"]
+        item = QtWidgets.QListWidgetItem(list_widget)
+        item.setSizeHint(QtCore.QSize(0, 25))
+        widget = IconTextWidget(name, icon1, icon2)
+        return item, widget
 
     def get_table_filter(self):
         if not self.dlg.chk_apply_filter.isChecked():
             return None
         else:
             return self.__get_current_selection()
+
+
+class IconTextWidget(QtWidgets.QWidget):
+    def __init__(self, text, icon1, icon2, parent=None):
+        super().__init__(parent)
+        self.text_label = QtWidgets.QLabel(text)
+        self.icon1_label = QtWidgets.QLabel()
+        self.icon1_label.setPixmap(icon1.pixmap(16, 16))
+        self.icon2_label = QtWidgets.QLabel()
+        self.icon2_label.setPixmap(icon2.pixmap(16, 16))
+        layout = QtWidgets.QHBoxLayout()
+        # izquierdo, arriba, derecho y abajo
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignLeft)
+        layout.addWidget(self.text_label)
+        layout.addWidget(self.icon1_label)
+        layout.addWidget(self.icon2_label)
+        self.setLayout(layout)

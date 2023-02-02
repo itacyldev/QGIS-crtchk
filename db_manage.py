@@ -14,7 +14,8 @@ table_list_select = "SELECT name FROM {schema_table} WHERE type='table' and not 
 
 def is_spatialite_table(table_name):
     table_name = table_name.lower()
-    if table_name in ['sqlite_master', 'networks', 'elementarygeometries', 'spatialindex', 'spatial_ref_sys', 'spatial_ref_sys_aux',
+    if table_name in ['sqlite_master', 'networks', 'elementarygeometries', 'spatialindex', 'spatial_ref_sys',
+                      'spatial_ref_sys_aux',
                       'spatialite_history', 'sql_statements_log', 'sqlite_sequence', 'topologies', 'data_licenses']:
         return True
     return 'geometry' in table_name or 'location' in table_name or 'coverages' in table_name
@@ -104,21 +105,30 @@ def drop_trigger(conn, trigger_name):
     conn.executescript("DROP TRIGGER {}".format(trigger_name))
 
 
+def get_update_col(conn, table_name):
+    """
+    Given a  connection and a table name, returns the name of the column detected as the column that records the
+    update date.
+    :param conn:
+    :param table_name:
+    :return:
+    """
+    list_cols = get_table_cols(conn, table_name)
+    found_cols = [col for col in list_cols if col in UPDATE_COL_NAMES]
+    return None if len(found_cols) == 0 else list_cols[0]
+
+
 def create_update_trigger(conn, table_name, re_create=True):
     # drop existing trigger
     if re_create and has_update_trigger(conn, table_name):
         drop_trigger(conn, UPDATE_TRIGGER_NAME.format(table_name))
 
     # list cols to find the update column
-    list_cols = f"SELECT name FROM PRAGMA_TABLE_INFO('{table_name}')"
-    found_cols = [col[0].lower() for col in query_for_list(conn, list_cols)]
-    col_names = [col for col in found_cols if col in UPDATE_COL_NAMES]
-    if not col_names:
+    update_col = get_update_col(conn, table_name)
+    if not update_col:
         raise Exception(
-            f"""Cannot find a possible update column for table {table_name}. No column with names {UPDATE_COL_NAMES}. "
-            Cols found: {found_cols}""")
-
-    update_column = col_names[0]
+            f"""Cannot find a possible update column for table {table_name}. No column with names {UPDATE_COL_NAMES}.
+            """)
     trigger_sql = UPDATE_TRIGGER.format(table_name=table_name, update_column=update_column,
                                         trigger_name=UPDATE_TRIGGER_NAME.format(table_name))
     conn.executescript(trigger_sql)
@@ -206,7 +216,7 @@ def get_table_cols(conn, table_name):
     try:
         cursor = conn.cursor()
         cursor.execute("PRAGMA table_info({})".format(table_name))
-        return [columna[1] for columna in cursor.fetchall()]
+        return [columna[1].lower() for columna in cursor.fetchall()]
     finally:
         cursor.close()
 

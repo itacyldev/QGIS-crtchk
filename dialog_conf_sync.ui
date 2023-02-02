@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
+    <width>636</width>
     <height>327</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>581</width>
+     <width>601</width>
      <height>301</height>
     </rect>
    </property>
@@ -129,9 +129,9 @@
     <widget class="QListWidget" name="lstw_selectionList">
      <property name="geometry">
       <rect>
-       <x>290</x>
+       <x>320</x>
        <y>100</y>
-       <width>181</width>
+       <width>171</width>
        <height>161</height>
       </rect>
      </property>
@@ -139,7 +139,7 @@
     <widget class="QPushButton" name="btn_add_all">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>240</x>
        <y>130</y>
        <width>71</width>
        <height>25</height>
@@ -165,7 +165,7 @@
     <widget class="QPushButton" name="btn_remove">
      <property name="geometry">
       <rect>
-       <x>480</x>
+       <x>500</x>
        <y>100</y>
        <width>89</width>
        <height>25</height>
@@ -178,7 +178,7 @@
     <widget class="QPushButton" name="btn_add">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>240</x>
        <y>100</y>
        <width>71</width>
        <height>25</height>
@@ -193,7 +193,7 @@
       <rect>
        <x>10</x>
        <y>100</y>
-       <width>181</width>
+       <width>221</width>
        <height>161</height>
       </rect>
      </property>
@@ -201,7 +201,7 @@
     <widget class="QPushButton" name="btn_prev">
      <property name="geometry">
       <rect>
-       <x>480</x>
+       <x>500</x>
        <y>270</y>
        <width>89</width>
        <height>25</height>
@@ -235,6 +235,28 @@
      </property>
      <property name="text">
       <string>filtrar tablas añadidas al proyecto</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_help">
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>54</y>
+       <width>41</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset theme="help"/>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
      </property>
     </widget>
    </widget>
