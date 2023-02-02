@@ -33,6 +33,7 @@ class CrtDrdSyncClient:
         self._listener = ApiClientListener()
         self._current_sync_id = None
         self._MAX_WAIT = 60000
+        self._SLEEP_TIME = 5  # time between checks
         # location of downloade file, if not provided, the file will be downloaded in the SO temp folder
         self.temp_folder = self.temp_folder = kwargs["temp_folder"] if "temp_folder" in kwargs else None
 
@@ -98,7 +99,7 @@ class CrtDrdSyncClient:
         init_time = time.time()
         elapsed = 0
         while pending and elapsed < self._MAX_WAIT:
-            time.sleep(2.5)
+            time.sleep(self._SLEEP_TIME)
             response, content = self.get_sync_status(sync_uri, return_response=True)
             pending = response.status_code == 200 and content["state"] == "INIT"
             elapsed = time.time() - init_time
