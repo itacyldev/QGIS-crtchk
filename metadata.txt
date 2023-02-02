@@ -6,7 +6,7 @@
 name=CartoDruid Synchronizer
 qgisMinimumVersion=3.0
 description=Plugin to synchronize SQLite databases to Cartodruid Synchronization services at ITACyL
-version=0.6
+version=0.7
 author=ITACyL
 email=gustavo.rio@itacyl.es
 
@@ -20,7 +20,7 @@ repository=https://github.com/itacyldev/QGIS-crtchk.git
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+# changelog=Mark geographical layers in table filter. Support for translations in help dialogs. Fixes error in table filtering.
 
 # Tags are comma separated with spaces allowed
 tags=python

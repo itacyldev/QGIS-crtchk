@@ -86,7 +86,6 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         if lang not in ["en", "es"]:  # TODO: make this dynamic
             lang = "en"
         html_file = stt.resolve_path(f"i18n/wks_help.{lang}.html")
-
         with open(html_file, "r") as file:
             help_content = file.read().replace("\n", "")
 

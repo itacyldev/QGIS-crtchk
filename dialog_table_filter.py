@@ -24,11 +24,12 @@
 import os
 import sqlite3
 
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QListWidgetItem, QDialog, QTextEdit
 from qgis.PyQt import uic
+from qgis.core import QgsApplication
 
 if os.environ.get("TEST_RUNNING", 0):
     import db_manage as dbm
@@ -78,17 +79,17 @@ class TableFilterScreen:
         dialog.setFixedSize(475, 300)
         text_edit = QTextEdit()
         text_edit.setReadOnly(True)
-        text_edit.insertHtml("""
-        <p>Esta pantalla permite seleccionar qué tablas quieres añadir a tu proyecto. Por defecto todas las tablas de la SQLite se añadirán al proyecto actual, pero si solo quieres añadir algunos (por ejemplo para excluir tablas no geográficas), selecciónalas en la lista de la derecha.
-        <p>Los iconos que anotan los nombres de las tablas indican los siguiente:</p>
-        <ul>
-            <li><img src='{layer}'/>: Indica que en la tabla almacena una capa geográfica.</li>
-            <li><img src='{time}'/>: Indica que en la tabla existe una columna para anotar la fecha de modificación del registro.</li>
-            <li><img src='{bolt}'/>: Indica que la tabla tiene creado un trigger para detección de cambios. Existe un trigger after update que actualiza la columna de fecha de registro.</li>
-        </ul>
-        """.format(layer=resolve_path("assets/layers-24.png"),
-                   bolt=resolve_path("assets/lightning-bolt-24.png"),
-                   time=resolve_path("assets/time-8-24.png")))
+        # get current user language to find proper info.
+        lang = QgsApplication.instance().locale()
+        if lang not in ["en", "es"]:  # TODO: make this dynamic
+            lang = "en"
+        html_file = resolve_path(f"i18n/table_filter_help.{lang}.html")
+        with open(html_file, "r") as file:
+            help_content = file.read().replace("\n", "")
+
+        text_edit.insertHtml(help_content.format(layer=resolve_path("assets/layers-24.png"),
+                                                 bolt=resolve_path("assets/lightning-bolt-24.png"),
+                                                 time=resolve_path("assets/time-8-24.png")))
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(text_edit)
@@ -207,7 +208,8 @@ class TableFilterScreen:
                 has_trigger = dbm.has_update_trigger(conn, name)
                 has_update_col = dbm.get_update_col(conn, name)
                 self.table_list.append((name, has_trigger))
-                item, widget = self.__create_list_item(self.dlg.lstw_tableList, name, is_geo, has_trigger, has_update_col)
+                item, widget = self.__create_list_item(self.dlg.lstw_tableList, name, is_geo, has_trigger,
+                                                       has_update_col)
                 self.dlg.lstw_tableList.addItem(item)
                 self.dlg.lstw_tableList.setItemWidget(item, widget)
 

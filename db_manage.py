@@ -129,7 +129,7 @@ def create_update_trigger(conn, table_name, re_create=True):
         raise Exception(
             f"""Cannot find a possible update column for table {table_name}. No column with names {UPDATE_COL_NAMES}.
             """)
-    trigger_sql = UPDATE_TRIGGER.format(table_name=table_name, update_column=update_column,
+    trigger_sql = UPDATE_TRIGGER.format(table_name=table_name, update_column=update_col,
                                         trigger_name=UPDATE_TRIGGER_NAME.format(table_name))
     conn.executescript(trigger_sql)
 

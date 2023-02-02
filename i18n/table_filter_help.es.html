@@ -1,19 +1,14 @@
-<p>CartoDruid es una aplicaci&oacute;n para Android desarrollada en el Instituto Tecnol&oacute;gico Agrario de Castilla
-    y Le&oacute;n (ITACyL) pensada como herramienta de apoyo a las tareas de trabajo en campo, que busca
-    resolver el problema de la utilizaci&oacute;n de informaci&oacute;n geogr&aacute;fica fuera de la oficina en un
-    entorno desconectado.</p>
-<p>El objetivo de la herramienta es permitir a los usuarios la recogida de datos r&aacute;pida y sencilla con los
-    conocimientos m&iacute;nimos sobre sistemas geogr&aacute;ficos y ser lo bastante abierta para poder ser integrada
-    dentro de flujo de trabajo de la organizaci&oacute;n del usuario.</p>
-<p>Para &eacute;sto ultimo, el ITACyL proporciona servicios de sincronizaci&oacute;n en la nube para compartir una visi&oacute;n
-    &uacute;nica de los datos entre diferentes dispositivos. El proceso de sincronizaaci&oacute;n se basa en el
-    intercambio entre cliente y servidor de una base de datos SQLite-Spatialite, los datos enviados en las tablas SQLite
-    son incorporados en la BD remota de forma incremental, y como respuesta, el cliente recibe una copia de la BD que
-    incluye los cambios nuevos enviados por otros dispositivos.</p>
-<p>Este sistema de sincronizaci&oacute;n est&aacute; abierto bajo petici&oacute;n, si est&aacute; interesado, por favor
-    contacte con nosotros a trav&eacute;s de nuestro foro en <a href="foro.cartodruid.es">foro.cartodruid.es</a> para
-    configurar
-    su workspace.</p>
-<p>En este mismo foro existe informaci&oacute;n sobre manejo de la herramienta y puede consultarnos
-    cualquier duda sobre el manjo de CartoDruid o c&oacute;mo integrarlo en su proyecto.</p>
-<p></p>
+<p>Esta pantalla permite seleccionar qué tablas quieres añadir a tu proyecto. Por defecto, todas las tablas de la SQLite
+    se añadirán al proyecto actual, pero si solo quieres añadir algunas (por ejemplo para excluir tablas no
+    geográficas), añádelas en la lista de la derecha.
+<p>Los iconos que anotan los nombres de las tablas indican los siguiente:</p>
+<ul>
+    <li><img src='{layer}'/>: Indica que en la tabla almacena una capa geográfica.</li>
+    <li><img src='{time}'/>: Indica que en la tabla tiene una <i>columna de fecha</i> para anotar la fecha de
+        modificación del
+        registro.
+    </li>
+    <li><img src='{bolt}'/>: Indica que la tabla tiene un trigger para detección de cambios. Existe un trigger
+        <i>after update</i> que actualiza la <i>columna de fecha</i> del registro.
+    </li>
+</ul>
