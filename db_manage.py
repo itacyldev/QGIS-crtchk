@@ -37,7 +37,7 @@ def get_table_list(conn=None, db_file=None, filter_schema_tables=True):
             results = query_for_list(conn, query)
             table_list = [row[0] for row in results]
             if filter_schema_tables:
-                table_list = [table_name for table_name in table_list if not is_spatialite_table(table_name)]
+                table_list = [table_name.lower() for table_name in table_list if not is_spatialite_table(table_name)]
 
             return table_list
         except:
@@ -253,7 +253,7 @@ def get_geo_layers(db_file):
         result_set = cursor.fetchall()
         # cerrar la conexión a la base de datos
         for row in result_set:
-            table_list.append(row[0])
+            table_list.append(row[0].lower())
     except:
         # no geo columns
         pass

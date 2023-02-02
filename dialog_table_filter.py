@@ -46,7 +46,8 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 ICONS = {
     "empty": QIcon(resolve_path("assets/transparent.png")),
     "bolt": QIcon(resolve_path("assets/lightning-bolt-24.png")),
-    "time": QIcon(resolve_path("assets/time-8-24")),
+    "time": QIcon(resolve_path("assets/time-8-24.png")),
+    "layer": QIcon(resolve_path("assets/layers-24.png")),
 }
 
 
@@ -81,10 +82,13 @@ class TableFilterScreen:
         <p>Esta pantalla permite seleccionar qué tablas quieres añadir a tu proyecto. Por defecto todas las tablas de la SQLite se añadirán al proyecto actual, pero si solo quieres añadir algunos (por ejemplo para excluir tablas no geográficas), selecciónalas en la lista de la derecha.
         <p>Los iconos que anotan los nombres de las tablas indican los siguiente:</p>
         <ul>
+            <li><img src='{layer}'/>: Indica que en la tabla almacena una capa geográfica.</li>
             <li><img src='{time}'/>: Indica que en la tabla existe una columna para anotar la fecha de modificación del registro.</li>
             <li><img src='{bolt}'/>: Indica que la tabla tiene creado un trigger para detección de cambios. Existe un trigger after update que actualiza la columna de fecha de registro.</li>
         </ul>
-        """.format(bolt=resolve_path("assets/lightning-bolt-24.png"), time=resolve_path("assets/time-8-24")))
+        """.format(layer=resolve_path("assets/layers-24.png"),
+                   bolt=resolve_path("assets/lightning-bolt-24.png"),
+                   time=resolve_path("assets/time-8-24.png")))
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(text_edit)
@@ -191,6 +195,7 @@ class TableFilterScreen:
             return
         file_path = file_path.replace('\\', '/')
         # leer las tablas de la BD
+        geo_tables = dbm.get_geo_layers(file_path)
         conn = sqlite3.connect(file_path)
         try:
             table_names = dbm.get_table_list(conn)
@@ -198,10 +203,11 @@ class TableFilterScreen:
             item_list = []
             # check if tablas has an update trigger
             for name in table_names:
+                is_geo = name in geo_tables
                 has_trigger = dbm.has_update_trigger(conn, name)
                 has_update_col = dbm.get_update_col(conn, name)
                 self.table_list.append((name, has_trigger))
-                item, widget = self.__create_list_item(self.dlg.lstw_tableList, name, has_trigger, has_update_col)
+                item, widget = self.__create_list_item(self.dlg.lstw_tableList, name, is_geo, has_trigger, has_update_col)
                 self.dlg.lstw_tableList.addItem(item)
                 self.dlg.lstw_tableList.setItemWidget(item, widget)
 
@@ -209,12 +215,13 @@ class TableFilterScreen:
             if conn:
                 conn.close()
 
-    def __create_list_item(self, list_widget, name, has_trigger, has_update_coll):
-        icon1 = ICONS["bolt"] if has_trigger else ICONS["empty"]
-        icon2 = ICONS["time"] if has_update_coll else ICONS["empty"]
+    def __create_list_item(self, list_widget, name, isgeo, has_trigger, has_update_coll):
+        icon1 = ICONS["layer"] if isgeo else ICONS["empty"]
+        icon2 = ICONS["bolt"] if has_trigger else ICONS["empty"]
+        icon3 = ICONS["time"] if has_update_coll else ICONS["empty"]
         item = QtWidgets.QListWidgetItem(list_widget)
         item.setSizeHint(QtCore.QSize(0, 25))
-        widget = IconTextWidget(name, icon1, icon2)
+        widget = IconTextWidget(name, icon1, icon2, icon3)
         return item, widget
 
     def get_table_filter(self):
@@ -225,13 +232,15 @@ class TableFilterScreen:
 
 
 class IconTextWidget(QtWidgets.QWidget):
-    def __init__(self, text, icon1, icon2, parent=None):
+    def __init__(self, text, icon1, icon2, icon3, parent=None):
         super().__init__(parent)
         self.text_label = QtWidgets.QLabel(text)
         self.icon1_label = QtWidgets.QLabel()
         self.icon1_label.setPixmap(icon1.pixmap(16, 16))
         self.icon2_label = QtWidgets.QLabel()
         self.icon2_label.setPixmap(icon2.pixmap(16, 16))
+        self.icon3_label = QtWidgets.QLabel()
+        self.icon3_label.setPixmap(icon3.pixmap(16, 16))
         layout = QtWidgets.QHBoxLayout()
         # izquierdo, arriba, derecho y abajo
         layout.setContentsMargins(0, 0, 0, 0)
@@ -239,4 +248,5 @@ class IconTextWidget(QtWidgets.QWidget):
         layout.addWidget(self.text_label)
         layout.addWidget(self.icon1_label)
         layout.addWidget(self.icon2_label)
+        layout.addWidget(self.icon3_label)
         self.setLayout(layout)

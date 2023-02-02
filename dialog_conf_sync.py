@@ -24,6 +24,7 @@
 import os
 from urllib.parse import urlparse
 
+from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTextEdit
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
@@ -90,6 +91,7 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
             help_content = file.read().replace("\n", "")
 
         text_edit.insertHtml(help_content)
+        text_edit.moveCursor(QTextCursor.Start)
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(text_edit)
         dialog.setLayout(layout)
