@@ -1,4 +1,4 @@
-name: CartoDruid github Actions build
+name: Build and Test
 run-name: ${{ github.actor }} is running test 🚀
 on: [push]
 jobs:
