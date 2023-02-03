@@ -31,13 +31,6 @@ jobs:
           report_paths: '**/build/test-results/TEST-*.xml'
           detailed_summary: true
           include_passed: true
-
-  Calc-coverage:
-    runs-on: ubuntu-latest
-   steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Coverage Badge
         run: coverage-badge -f -o coverage.svg
       - name: Commit badge file
@@ -46,9 +39,9 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add coverage.svg
           git commit -m "Updated coverage.svg"
-
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.github_token }}
           branch: ${{ github.ref }}
+    - run: echo "🍏 This job's status is ${{ job.status }}."
