@@ -39,9 +39,10 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add coverage.svg
           git commit -m "Updated coverage.svg"
-      - name: Push badge to repo
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.github_token }}
-          branch: ${{ github.ref }}
+          git push origin
+#      - name: Push badge to repo
+#        uses: ad-m/github-push-action@master
+#        with:
+#          github_token: ${{ secrets.github_token }}
+#          branch: ${{ github.ref }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
