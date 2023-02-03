@@ -1,6 +1,8 @@
 name: Build and Test
 run-name: ${{ github.actor }} is running test 🚀
 on: [push]
+permissions:
+  checks: write
 jobs:
   Run-Unit-Test:
     runs-on: ubuntu-latest
