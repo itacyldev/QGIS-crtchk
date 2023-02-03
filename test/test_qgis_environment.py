@@ -14,6 +14,9 @@ __copyright__ = ('Copyright 2012, Australia Indonesia Facility for '
                  'Disaster Reduction')
 
 import os
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
+
+
 import unittest
 from qgis.core import (
     QgsProviderRegistry,

@@ -14,7 +14,7 @@ __copyright__ = 'Copyright 2023, ITACyL'
 
 import os
 import unittest
-
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 os.environ["TEST_RUNNING"] = "1"
 from utilities import get_qgis_app
 

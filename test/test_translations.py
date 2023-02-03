@@ -13,12 +13,16 @@ __author__ = 'ismailsunni@yahoo.co.id'
 __date__ = '12/10/2011'
 __copyright__ = ('Copyright 2012, Australia Indonesia Facility for '
                  'Disaster Reduction')
+
 import unittest
 import os
+
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 from qgis.PyQt.QtCore import QCoreApplication, QTranslator
 
 QGIS_APP = get_qgis_app()
+
 
 @unittest.SkipTest
 class SafeTranslationsTest(unittest.TestCase):

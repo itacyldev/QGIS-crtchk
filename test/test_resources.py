@@ -11,8 +11,9 @@
 __author__ = 'gustavo.rio@itacyl.es'
 __date__ = '2023-01-20'
 __copyright__ = 'Copyright 2023, ITACyL'
-
+import os
 import unittest
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 from qgis.PyQt.QtGui import QIcon
 
