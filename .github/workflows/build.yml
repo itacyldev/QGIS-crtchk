@@ -19,4 +19,11 @@ jobs:
         run: docker run -d -t --name qgis-testing -v  ${GITHUB_WORKSPACE}:/plugin_project qgis/qgis:latest
       - name: Run test env container
         run: docker exec -t qgis-testing sh -c "cd /plugin_project;./scripts/run_test.sh"
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: python unittest Tests            # Name of the check run which will be created
+          path: build/test-reports/TEST-*.xml    # Path to test results
+          reporter: jest-junit        # Format of test results
       - run: echo "🍏 This job's status is ${{ job.status }}."
