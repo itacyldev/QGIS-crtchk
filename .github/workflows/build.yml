@@ -1,6 +1,8 @@
-name: CartoDruid github Actions build
+name: Build and Test
 run-name: ${{ github.actor }} is running test 🚀
 on: [push]
+permissions:
+  checks: write
 jobs:
   Run-Unit-Test:
     runs-on: ubuntu-latest
@@ -24,4 +26,6 @@ jobs:
         if: always() # always run even if the previous step fails
         with:
           report_paths: '**/build/test-results/TEST-*.xml'
+          detailed_summary: true
+          include_passed: true
       - run: echo "🍏 This job's status is ${{ job.status }}."
