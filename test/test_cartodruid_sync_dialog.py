@@ -15,17 +15,17 @@ __copyright__ = 'Copyright 2023, ITACyL'
 import os
 import unittest
 
-from PyQt5.QtWidgets import QDialogButtonBox, QDialog
-
 os.environ["TEST_RUNNING"] = "1"
-
-from dialog_conf_sync import CartoDruidConfSyncDialog
-
 from utilities import get_qgis_app
 
 QGIS_APP = get_qgis_app()
 
-@unittest.skip
+from PyQt5.QtWidgets import QDialogButtonBox, QDialog
+
+from dialog_conf_sync import CartoDruidConfSyncDialog
+
+
+# @unittest.skip
 class CartoDruidSyncDialogTest(unittest.TestCase):
     """Test dialog works."""
 
@@ -39,11 +39,18 @@ class CartoDruidSyncDialogTest(unittest.TestCase):
 
     def test_dialog_ok(self):
         """Test we can click OK."""
+        # fill data
+        self.dialog.wksId.setText("asdf")
+        self.dialog.userName.setText("asdf")
+        self.dialog.userApikey.setText("asdf")
+        self.dialog.endpoint.setText("http://mydomain.com")
+        self.dialog.fileWidget.setFilePath("/path/to_file")
 
         button = self.dialog.button_box.button(QDialogButtonBox.Ok)
         button.click()
         result = self.dialog.result()
         self.assertEqual(result, QDialog.Accepted)
+
 
     def test_dialog_cancel(self):
         """Test we can click cancel."""

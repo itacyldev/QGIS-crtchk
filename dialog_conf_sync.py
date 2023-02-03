@@ -24,11 +24,11 @@
 import os
 from urllib.parse import urlparse
 
+from qgis.core import QgsApplication
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QMessageBox, QDialog, QTextEdit
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
-from qgis.core import QgsApplication
 
 if os.environ.get("TEST_RUNNING", 0):
     from dialog_table_filter import TableFilterScreen

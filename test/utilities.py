@@ -5,9 +5,12 @@ import string
 import sys
 import logging
 import tempfile
+import traceback
 from pathlib import Path
 import random
 
+# from _gui import QgisInterface
+from qgis.gui import QgsMapCanvas, QgisInterface
 LOGGER = logging.getLogger('QGIS')
 QGIS_APP = None  # Static variable used to hold hand to running QGIS app
 CANVAS = None
@@ -27,18 +30,25 @@ def get_qgis_app():
 
     try:
         from qgis.PyQt import QtGui, QtCore
+        from PyQt5.QtWidgets import QApplication
         from qgis.core import QgsApplication
-        from qgis.gui import QgsMapCanvas
-        from .qgis_interface import QgisInterface
+        from qgis.gui import QgsMapCanvas, QgisInterface
+        from PyQt5 import QtWidgets
+        # from qgis_interface import QgisInterface
     except ImportError:
-        return None, None, None, None
+        # return None, None, None, None
+        print(repr(traceback.format_exception(*sys.exc_info())))
+        raise
 
     global QGIS_APP  # pylint: disable=W0603
 
     if QGIS_APP is None:
         gui_flag = True  # All test will run qgis in gui mode
         # noinspection PyPep8Naming
-        QGIS_APP = QgsApplication(sys.argv, gui_flag)
+        try:
+            QGIS_APP = QgsApplication(sys.argv, gui_flag)
+        except:
+            QGIS_APP = QgsApplication([x.encode("utf-8") for x in sys.argv], gui_flag)
         # Make sure QGIS_PREFIX_PATH is set in your env if needed!
         QGIS_APP.initQgis()
         s = QGIS_APP.showSettings()
@@ -47,7 +57,8 @@ def get_qgis_app():
     global PARENT  # pylint: disable=W0603
     if PARENT is None:
         # noinspection PyPep8Naming
-        PARENT = QtGui.QWidget()
+        # PARENT = QtGui.QWidget()
+        PARENT = QtWidgets.QWidget()
 
     global CANVAS  # pylint: disable=W0603
     if CANVAS is None:
@@ -59,9 +70,14 @@ def get_qgis_app():
     if IFACE is None:
         # QgisInterface is a stub implementation of the QGIS plugin interface
         # noinspection PyPep8Naming
-        IFACE = QgisInterface(CANVAS)
+        IFACE = MyQgisInterface(CANVAS)
 
     return QGIS_APP, CANVAS, IFACE, PARENT
+
+
+class MyQgisInterface(QgisInterface):
+    def __init__(self, parent=None):
+        super(QgisInterface, self).__init__()
 
 
 def get_project_root():
