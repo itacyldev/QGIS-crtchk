@@ -16,10 +16,10 @@ jobs:
       #- name: Remove previous container
         #run: docker rm qgis-testing
       - name: Run test env container
-        run: docker run -d --name qgis-testing -v  ${GITHUB_WORKSPACE}:/plugin_project qgis/qgis:latest
+        run: docker run -d -t --name qgis-testing -v  ${GITHUB_WORKSPACE}:/plugin_project qgis/qgis:latest
       - name: Run test env container
 #         run: docker build -t qgis-testing-environment --build-arg QGIS_REPOSITORY='https://github.com/qgis/QGIS.git' --build-arg QGIS_BRANCH='master' --build-arg LEGACY='false'
         run: docker exec -t qgis-testing sh -c "cd /plugin_project;./scripts/run_test.sh"
-      - name: Run unit testsa
+      - name: Run unit tests
         run: scripts/run_test.sh
       - run: echo "🍏 This job's status is ${{ job.status }}."
