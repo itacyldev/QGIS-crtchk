@@ -13,8 +13,8 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - name: Prepare environment
         run: docker pull qgis/qgis:latest
-      - name: Remove previous container
-        run: docker rm qgis-testing
+      #- name: Remove previous container
+        #run: docker rm qgis-testing
       - name: Run test env container
         run: docker run -d --name qgis-testing -v  ${GITHUB_WORKSPACE}:/plugin_project qgis/qgis:latest
       - name: Run test env container
