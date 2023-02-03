@@ -36,11 +36,14 @@ jobs:
           rm -rf coverage.svg
           docker exec -t qgis-testing sh -c "cd /plugin_project;coverage-badge -f -o coverage.svg"
           ls -lart
+          git status
       - name: Commit badge file
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          git status
           git add coverage.svg
+          git status
           git commit -m "Updated coverage.svg"
           git push origin
 #      - name: Push badge to repo
