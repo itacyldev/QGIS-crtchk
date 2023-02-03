@@ -35,6 +35,7 @@ jobs:
         run: |
           rm -rf coverage.svg
           docker exec -t qgis-testing sh -c "cd /plugin_project;coverage-badge -f -o coverage.svg"
+          ls -lart
       - name: Commit badge file
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
