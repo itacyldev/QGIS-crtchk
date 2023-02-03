@@ -27,4 +27,5 @@ jobs:
         with:
           report_paths: '**/build/test-results/TEST-*.xml'
           detailed_summary: true
+          include_passed: true
       - run: echo "🍏 This job's status is ${{ job.status }}."
