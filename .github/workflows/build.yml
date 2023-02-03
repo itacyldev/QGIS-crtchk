@@ -41,11 +41,9 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git status
           git add coverage.svg
-          git status
           git commit -m "Updated coverage.svg"
-          git push origin
+          git push
 #      - name: Push badge to repo
 #        uses: ad-m/github-push-action@master
 #        with:
