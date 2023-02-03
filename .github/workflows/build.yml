@@ -33,10 +33,14 @@ jobs:
           include_passed: true
       - name: Coverage Badge
         run: |
-          rm -rf coverage.svg
           docker exec -t qgis-testing sh -c "cd /plugin_project;coverage-badge -f -o coverage.svg"
-          git status
+      - name: Verify Changed files
+        uses: tj-actions/verify-changed-files@v12
+        id: changed_files
+        with:
+          files: coverage.svg
       - name: Commit badge file
+        if: steps.changed_files.outputs.files_changed == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
