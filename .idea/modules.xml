@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/QGIS-crtchk.iml" filepath="$PROJECT_DIR$/.idea/QGIS-crtchk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../gusriobr.github.io/.idea/gusriobr.github.io.iml" filepath="$PROJECT_DIR$/../gusriobr.github.io/.idea/gusriobr.github.io.iml" />
     </modules>
   </component>
 </project>
