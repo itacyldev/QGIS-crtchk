@@ -42,26 +42,26 @@ class CrtDrdSyncClient:
 
     def exec(self, file: str):
         # location files to upload
-        self._listener.notify("Starting synchronization process, sending file {}".format(file))
+        self._listener.info("Starting synchronization process, sending file {}".format(file))
         sync_uri = self._create_sync(file)
 
         # push sync resources
-        # self._listener.notify("Pushing files to sync_uri " + sync_uri)
+        # self._listener.info("Pushing files to sync_uri " + sync_uri)
         # self.push_files(sync_uri, files)
         # run synchronization
 
         # wait for sync to finish
-        self._listener.notify("Checking sync status")
+        self._listener.info("Checking sync status")
         self._check_status(sync_uri)
 
         # download result files
-        self._listener.notify("Synchronization process finished, downloading files")
+        self._listener.info("Synchronization process finished, downloading files")
         local_file = self.download_file(sync_uri)
 
-        self._listener.notify("Update download state")
+        self._listener.info("Update download state")
         self.finish_sync(sync_uri)
 
-        self._listener.notify("Synchronization completed!")
+        self._listener.info("Synchronization completed!")
         return local_file
 
     def _create_sync(self, file):
@@ -103,7 +103,7 @@ class CrtDrdSyncClient:
             response, content = self.get_sync_status(sync_uri, return_response=True)
             pending = response.status_code == 200 and content["state"] == "INIT"
             elapsed = time.time() - init_time
-            self._listener.notify("Checking synchronization {}".format(sync_uri))
+            self._listener.info("Checking synchronization {}".format(sync_uri))
 
         if pending:
             raise BaseException("Synchronization not finished, max wait exceeded!")
@@ -123,7 +123,7 @@ class CrtDrdSyncClient:
         temp = tempfile.NamedTemporaryFile(delete=False, suffix='.sqlite.zip', dir=self.temp_folder)
         temp.write(response.content)
         temp.close()
-        self._listener.notify("Downloaded file {}".format(temp.name))
+        self._listener.info("Downloaded file {}".format(temp.name))
         return temp.name
 
     def finish_sync(self, sync_uri):

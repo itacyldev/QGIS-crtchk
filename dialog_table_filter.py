@@ -38,12 +38,6 @@ else:
     from . import db_manage as dbm
     from .plugin_settings import resolve_path
 
-# This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-# FORM_CLASS, _ = uic.loadUiType(os.path.join(
-#     os.path.dirname(__file__), 'cartodruid_sync_dialog_base.ui'))
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'cartodruid_sync_wizard.ui'))
-
 ICONS = {
     "empty": QIcon(resolve_path("assets/transparent.png")),
     "bolt": QIcon(resolve_path("assets/lightning-bolt-24.png")),
@@ -113,7 +107,6 @@ class TableFilterScreen:
         table_filter = wks_config.table_filter
         is_checked = table_filter is not None
         self.dlg.chk_apply_filter.setChecked(is_checked)
-        print(f"Table filter found: {table_filter}")
         # load table_names into selection combo
         if table_filter and len(table_filter) > 0:
             self.__add_tables_to_selection(table_filter)
@@ -126,10 +119,10 @@ class TableFilterScreen:
         no_trigger_tables = []
         for item_idx in self.dlg.lstw_tableList.selectedIndexes():
             table_name, has_index = self.table_list[item_idx.row()]
-            if has_index:
-                ok_tables.append(table_name)
-            else:
-                no_trigger_tables.append(table_name)
+            ok_tables.append(table_name)
+            # if has_index:
+            # else:
+            #     no_trigger_tables.append(table_name)
 
         # add ok tables to selected list
         self.__add_tables_to_selection(ok_tables)
@@ -162,15 +155,15 @@ class TableFilterScreen:
 
     def __enable_form_fields(self):
         enable = self.dlg.chk_apply_filter.isChecked()
-        fields = ['btn_add', 'btn_add_all', 'btn_remove', 'btn_reload']
+        fields = ['btn_add', 'btn_add_all', 'btn_remove', 'btn_reload', 'lstw_selectionList', 'lstw_tableList']
         for f in fields:
             widget = getattr(self.dlg, f)
             widget.setEnabled(enable)
 
     def __add_all(self):
-        all_tables = []
-        for i in range(self.dlg.lstw_tableList.count()):
-            all_tables.append(self.dlg.lstw_tableList.item(i).text())
+        if not self.table_list:
+            return
+        all_tables = [name for name, has_idx in self.table_list]
         self.__add_tables_to_selection(all_tables)
 
     def __remove_selected(self):

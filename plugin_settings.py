@@ -119,7 +119,5 @@ def resolve_path(path):
 if __name__ == '__main__':
     wks = WksConfig("0", "1", "2", "3", "4")
     json_str = json.dumps(wks, default=vars)
-    print(json_str)
     settings_object = json.loads(json_str)
     settings_object = WksConfig(**settings_object)
-    print(settings_object)

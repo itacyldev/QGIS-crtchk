@@ -18,8 +18,12 @@ def is_spatialite_table(table_name):
                       'spatial_ref_sys_aux',
                       'spatialite_history', 'sql_statements_log', 'sqlite_sequence', 'topologies', 'data_licenses']:
         return True
-    return 'geometry' in table_name or 'location' in table_name or 'coverages' in table_name
-    # idx_layer1_geometry_rowid, 'idx_layer1_geometry', 'idx_layer1_geometry_node', 'idx_layer1_geometry_parent'
+    keywords_found = list(
+        filter(lambda x: x in table_name,
+               ["location", "coverages", "_raster_", "_fonts", "_vector_", "_styled_", "stored_", "se_fonts",
+                "se_group_", "se_external", "geometry_"]))
+
+    return len(keywords_found) > 0
 
 
 def get_table_list(conn=None, db_file=None, filter_schema_tables=True):
@@ -276,3 +280,4 @@ def create_empty_db(file_path):
     finally:
         if conn:
             conn.close()
+

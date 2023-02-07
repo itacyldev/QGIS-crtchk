@@ -273,7 +273,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset theme="help"/>
+      <iconset theme="help">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>

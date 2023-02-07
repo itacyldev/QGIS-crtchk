@@ -138,7 +138,6 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
         super().accept()
 
     def close(self):
-        print("cerrandoasdfasf")
         self.__go_wks_config()
         super().close()
 
@@ -158,8 +157,6 @@ class CartoDruidConfSyncDialog(QtWidgets.QDialog, FORM_CLASS):
                 raise Exception("Invalid URL")
         except Exception:
             messages.append("El campo endpoint tiene un formato incorrecto.")
-
-        print("asdfasfasfasfas")
         return messages
 
     def get_wks_config(self):
