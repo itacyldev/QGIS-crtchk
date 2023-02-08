@@ -60,7 +60,8 @@ class MessagesDialog(QtWidgets.QDialog, FORM_CLASS):
             msgs.append(self.lstw_messages.item(i).text())
         text = "\n".join(msgs)
         QApplication.clipboard().setText(text)
-        QMessageBox.question(None, "Info", "Mensajes copiados al portapapeles", QMessageBox.Ok)
+        if not "TEST_RUNNING" in os.environ:
+            QMessageBox.question(None, "Info", "Mensajes copiados al portapapeles", QMessageBox.Ok)
 
     def notify_msg(self, msg_type, msg):
         # add new message to list

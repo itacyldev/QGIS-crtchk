@@ -19,9 +19,9 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"
 os.environ["TEST_RUNNING"] = "1"
 from utilities import get_qgis_app
 
-QGIS_APP = get_qgis_app()
+QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
-from PyQt5.QtWidgets import QDialogButtonBox, QDialog, QApplication
+from PyQt5.QtWidgets import QDialogButtonBox, QDialog
 
 from dialog_messages import MessagesDialog
 
@@ -40,11 +40,11 @@ class MessagesDialogTest(unittest.TestCase):
 
     def test_dialog_copy(self):
         """Test we can click OK."""
+        self.dialog.notify_msg("info", "one_message")
         self.dialog.btn_copy.click()
 
-        clipboard_content = QApplication.clipboard().text()
-
-        self.assertIsNotNone(clipboard_content)
+        clipboard_content = QGIS_APP.clipboard().text()
+        self.assertTrue(len(clipboard_content.strip()) > 0)
 
     def test_dialog_accept(self):
         """Test we can click OK."""
@@ -52,8 +52,6 @@ class MessagesDialogTest(unittest.TestCase):
         button.click()
         result = self.dialog.result()
         self.assertEqual(result, QDialog.Accepted)
-
-
 
 
 if __name__ == "__main__":
