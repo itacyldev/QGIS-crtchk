@@ -48,9 +48,10 @@ jobs:
           git add -f coverage.svg
           git commit -m "Updated coverage.svg"
 #          git push origin HEAD:master --force
-        uses: ad-m/github-push-action@master
+      - name: Push changes
         if: steps.changed_files.outputs.files_changed == 'true'
+        uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.github_token }}
           branch: ${{ github.ref }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
