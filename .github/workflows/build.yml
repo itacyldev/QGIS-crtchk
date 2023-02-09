@@ -23,7 +23,10 @@ jobs:
           docker exec -t qgis-testing sh -c "pip install coverage"
           docker exec -t qgis-testing sh -c "pip install coverage-badge"
       - name: Run tests and Coverage in container
-        run: docker exec -t qgis-testing sh -c "cd /plugin_project;./scripts/run_test.sh"
+        run: |
+          docker exec -t qgis-testing sh -c "cd /plugin_project;./scripts/run_test.sh"
+          docker exec -t qgis-testing sh -c "cd /plugin_project;coverage html -d build/coverage/
+          docker exec -t qgis-testing sh -c "cd /plugin_project;coverage json -o build/coverage/report.json
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
         if: always() # always run even if the previous step fails
@@ -33,6 +36,7 @@ jobs:
           include_passed: true
       - name: Coverage Badge
         run: |
+          docker exec -t qgis-testing sh -c "cd /plugin_project;coverage-badge -f -o coverage.svg"
           docker exec -t qgis-testing sh -c "cd /plugin_project;coverage-badge -f -o coverage.svg"
       - name: Verify Changed files
         uses: tj-actions/verify-changed-files@v12

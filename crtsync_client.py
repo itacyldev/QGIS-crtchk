@@ -32,7 +32,7 @@ class CrtDrdSyncClient:
         self.credentials = credentials
         self._listener = ApiClientListener()
         self._current_sync_id = None
-        self._MAX_WAIT = 60000
+        self._MAX_WAIT = 10 * 60  # seconds
         self._SLEEP_TIME = 5  # time between checks
         # location of downloade file, if not provided, the file will be downloaded in the SO temp folder
         self.temp_folder = self.temp_folder = kwargs["temp_folder"] if "temp_folder" in kwargs else None

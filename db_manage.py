@@ -61,13 +61,13 @@ def query_for_one(conn, query):
         rows = cur.fetchone()
         result = []
         for row in rows:
-            result.append(row)
+            return row
     except Exception as e:
         logging.exception(e)
         raise e
     finally:
         cur.close()
-    return result
+    return None
 
 
 def query_for_list(conn, query):
@@ -176,11 +176,9 @@ def create_insert_trigger(conn, table_name, re_create=True):
     conn.executescript(trigger_sql)
 
 
-def setup_db_triggers(db_file, script):
+def setup_db_triggers(db_file):
     # table list
     conn = sqlite3.connect(db_file)
-
-    script_path = None
 
     try:
         table_list = get_table_list(conn)

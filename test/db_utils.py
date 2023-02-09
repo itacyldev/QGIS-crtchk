@@ -15,12 +15,13 @@ def create_test_db():
 
 
 
-def create_random_table(db_file):
+def create_random_table(db_file) -> str:
     table_name = utl.random_string(10)
     query = f"""
         CREATE TABLE {table_name} (
             col1 integer PRIMARY KEY,
             col2 text,
+            f_insert integer,
             f_update integer
         )
     """
