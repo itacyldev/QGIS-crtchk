@@ -54,6 +54,7 @@ class MessagesDialogTest(unittest.TestCase):
         self.assertEqual(result, QDialog.Accepted)
 
 
+
 if __name__ == "__main__":
     suite = unittest.makeSuite(MessagesDialogTest)
     runner = unittest.TextTestRunner(verbosity=2)

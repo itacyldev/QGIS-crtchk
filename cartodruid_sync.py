@@ -325,6 +325,7 @@ class SyncListener(ApiClientListener):
         QgsMessageLog.logMessage(repr(traceback.format_exception(*sys.exc_info())), level=Qgis.Critical)
 
     def on_start(self, msg):
+        self.dlg.clear_messages()
         widget = self.iface.messageBar().createMessage(msg, "Mensajes")
         btn_messages = QPushButton(widget)
         btn_messages.setText("Mensajes")

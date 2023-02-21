@@ -75,3 +75,6 @@ class MessagesDialog(QtWidgets.QDialog, FORM_CLASS):
         item.setText(msg)
         self.lstw_messages.addItem(item)
         self.lstw_messages.scrollTo(self.lstw_messages.indexFromItem(item))
+
+    def clear_messages(self):
+        self.lstw_messages.clear()

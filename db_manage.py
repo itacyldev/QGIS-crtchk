@@ -119,7 +119,7 @@ def get_update_col(conn, table_name):
     """
     list_cols = get_table_cols(conn, table_name)
     found_cols = [col for col in list_cols if col in UPDATE_COL_NAMES]
-    return None if len(found_cols) == 0 else list_cols[0]
+    return None if len(found_cols) == 0 else found_cols[0]
 
 
 def create_update_trigger(conn, table_name, re_create=True):
