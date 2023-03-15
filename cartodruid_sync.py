@@ -268,8 +268,8 @@ def add_vector_layer(wks_config, listener):
     table_list = dbm.get_table_list(db_file=file_path)
     listener.info(f"table filter: {wks_config.table_filter}")
     if wks_config.table_filter:
-        # exclude filtered layers
-        table_list = [tbl for tbl in table_list if tbl not in wks_config.table_filter]
+        # incluye just selected layers
+        table_list = [tbl for tbl in table_list if tbl in wks_config.table_filter]
     # table_list = dbm.get_geo_layers(file_path)
     listener.info("Geo layers found in [{}]: {}".format(file_path, table_list))
     # add layers to project

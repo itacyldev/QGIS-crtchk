@@ -2,6 +2,8 @@ import logging
 import random
 import sqlite3
 
+LOGGER = logging.getLogger(__name__)
+
 
 def read_script(file_path):
     with open(file_path, 'r') as f:
@@ -15,14 +17,14 @@ table_list_select = "SELECT name FROM {schema_table} WHERE type='table' and not 
 def is_spatialite_table(table_name):
     table_name = table_name.lower()
     if table_name in ['sqlite_master', 'networks', 'elementarygeometries', 'spatialindex', 'spatial_ref_sys',
-                      'spatial_ref_sys_aux',
-                      'spatialite_history', 'sql_statements_log', 'sqlite_sequence', 'topologies', 'data_licenses']:
+                      'spatial_ref_sys_aux', "android_metadata", 'spatialite_history', 'sql_statements_log',
+                      'sqlite_sequence', 'topologies', 'data_licenses']:
         return True
     keywords_found = list(
         filter(lambda x: x in table_name,
                ["location", "coverages", "_raster_", "_fonts", "_vector_", "_styled_", "stored_", "se_fonts",
-                "se_group_", "se_external", "geometry_"]))
-
+                "sqlite_stat",
+                "se_group_", "se_external", "geometry_", "layer_statistics"]))
     return len(keywords_found) > 0
 
 
@@ -34,7 +36,6 @@ def get_table_list(conn=None, db_file=None, filter_schema_tables=True):
 
     # use sqlite_master
     schema_tables = ["sqlite_master", "sqlite_schema"]
-    table_list = []
     for table_name in schema_tables:
         try:
             query = table_list_select.format(schema_table=table_name)
@@ -42,16 +43,15 @@ def get_table_list(conn=None, db_file=None, filter_schema_tables=True):
             table_list = [row[0] for row in results]
             if filter_schema_tables:
                 table_list = [table_name.lower() for table_name in table_list if not is_spatialite_table(table_name)]
-
             return table_list
         except:
-            logging.exception()
-            logging.warning(f"Couldn't query table list using table [{table_name}].")
+            LOGGER.exception()
+            LOGGER.warning(f"Couldn't query table list using table [{table_name}].")
         finally:
             if close_conn and conn:
                 conn.close()
 
-    raise Exception("No se han podido consultar las tablas de la bd")
+    raise Exception("No se han podido consultar las tablas de la BD.")
 
 
 def query_for_one(conn, query):
@@ -63,7 +63,7 @@ def query_for_one(conn, query):
         for row in rows:
             return row
     except Exception as e:
-        logging.exception(e)
+        LOGGER.exception(e)
         raise e
     finally:
         cur.close()
@@ -79,7 +79,7 @@ def query_for_list(conn, query):
         for row in rows:
             result.append(row)
     except Exception as e:
-        logging.exception(e)
+        LOGGER.exception(e)
         raise e
     finally:
         cur.close()
@@ -130,9 +130,9 @@ def create_update_trigger(conn, table_name, re_create=True):
     # list cols to find the update column
     update_col = get_update_col(conn, table_name)
     if not update_col:
-        raise Exception(
-            f"""Cannot find a possible update column for table {table_name}. No column with names {UPDATE_COL_NAMES}.
-            """)
+        LOGGER.warning(f"""Cannot find a possible update column for table {table_name}.
+            No column with names {UPDATE_COL_NAMES}.""")
+        return
     trigger_sql = UPDATE_TRIGGER.format(table_name=table_name, update_column=update_col,
                                         trigger_name=UPDATE_TRIGGER_NAME.format(table_name))
     conn.executescript(trigger_sql)
@@ -166,9 +166,10 @@ def create_insert_trigger(conn, table_name, re_create=True):
     found_cols = [col[0].lower() for col in query_for_list(conn, list_cols)]
     col_names = [col for col in found_cols if col in INSERT_COL_NAMES]
     if not col_names:
-        raise Exception(
+        LOGGER.warning(
             f"""Cannot find a possible insert column for table {table_name}. No column with names {INSERT_COL_NAMES}. "
             Cols found: {found_cols}""")
+        return
 
     insert_column = col_names[0]
     trigger_sql = INSERT_TRIGGER.format(table_name=table_name, insert_column=insert_column,
@@ -278,4 +279,3 @@ def create_empty_db(file_path):
     finally:
         if conn:
             conn.close()
-

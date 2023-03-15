@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
+    <width>766</width>
     <height>327</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>CartoDruid Synchronizer</string>
@@ -18,15 +24,30 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>601</width>
+     <width>741</width>
      <height>301</height>
     </rect>
    </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="lineWidth">
+    <number>1</number>
+   </property>
    <widget class="QWidget" name="wks_conf">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <widget class="QWidget" name="formLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>50</x>
+       <x>120</x>
        <y>40</y>
        <width>501</width>
        <height>197</height>
@@ -98,7 +119,7 @@
     <widget class="QDialogButtonBox" name="button_box">
      <property name="geometry">
       <rect>
-       <x>30</x>
+       <x>90</x>
        <y>270</y>
        <width>341</width>
        <height>32</height>
@@ -114,7 +135,7 @@
     <widget class="QPushButton" name="btn_next">
      <property name="geometry">
       <rect>
-       <x>380</x>
+       <x>440</x>
        <y>270</y>
        <width>89</width>
        <height>25</height>
@@ -127,7 +148,7 @@
     <widget class="QPushButton" name="btn_help_wks">
      <property name="geometry">
       <rect>
-       <x>560</x>
+       <x>660</x>
        <y>10</y>
        <width>41</width>
        <height>31</height>
@@ -149,20 +170,35 @@
     </widget>
    </widget>
    <widget class="QWidget" name="table_filter">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <widget class="QListWidget" name="lstw_selectionList">
      <property name="geometry">
       <rect>
-       <x>320</x>
+       <x>400</x>
        <y>100</y>
-       <width>171</width>
+       <width>231</width>
        <height>161</height>
       </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="resizeMode">
+      <enum>QListView::Adjust</enum>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_add_all">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>320</x>
        <y>130</y>
        <width>71</width>
        <height>25</height>
@@ -182,26 +218,13 @@
       </rect>
      </property>
      <property name="text">
-      <string>Indica en la lista de la derecha las tablas que quieres añadir al proyecto</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_remove">
-     <property name="geometry">
-      <rect>
-       <x>500</x>
-       <y>100</y>
-       <width>89</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Remove</string>
+      <string>Indica en la lista de la derecha las tablas que quieres añadir a la TOC del proyecto</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_add">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>320</x>
        <y>100</y>
        <width>71</width>
        <height>25</height>
@@ -216,15 +239,18 @@
       <rect>
        <x>10</x>
        <y>100</y>
-       <width>221</width>
+       <width>301</width>
        <height>161</height>
       </rect>
+     </property>
+     <property name="resizeMode">
+      <enum>QListView::Adjust</enum>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_prev">
      <property name="geometry">
       <rect>
-       <x>500</x>
+       <x>610</x>
        <y>270</y>
        <width>89</width>
        <height>25</height>
@@ -263,7 +289,7 @@
     <widget class="QPushButton" name="btn_help">
      <property name="geometry">
       <rect>
-       <x>560</x>
+       <x>660</x>
        <y>10</y>
        <width>41</width>
        <height>31</height>
@@ -281,6 +307,19 @@
        <width>24</width>
        <height>24</height>
       </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_remove">
+     <property name="geometry">
+      <rect>
+       <x>640</x>
+       <y>100</y>
+       <width>89</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove</string>
      </property>
     </widget>
    </widget>
