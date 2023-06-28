@@ -55,11 +55,11 @@ Then add tables to selection combo using 'add' and 'add all' buttons.
 
 In the QGIS reference explains how to configure your IDE to refer to QGIS python packages. In this case I prefer to
 use (a .pth file)[# https://docs.python.org/3/library/site.html] to append the QGIS site-package directory to the env
-PYTTHONPATH variable. Create a qgis.pth file and copy it into `project/venv/lib/<python.version>/site-packages/` if
+PYTHONPATH variable. Create a qgis.pth file and copy it into `project/venv/lib/<python.version>/site-packages/` if
 you're working on linux or  `project/venv/Lib/site-packages/` if you're in windows, with this content:
 
 ``` shell
-# Adss QGIS instalation folder
+# Ads QGIS instalation folder
 /usr/lib/python3/dist-packages/qgis/
 
 #Or in windows something like this:
