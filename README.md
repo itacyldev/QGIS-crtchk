@@ -46,8 +46,8 @@ list of 'magick nambes' is used `f_update, update_date, mod_date, f_actualizacio
 By default, the plugin adds all the tables contained in the downloaded database to current project (if they aren't
 already added). In case you just want to add some tables (for example just the geographic layers), you can use the **
 Table filtering screen** to restrict the tables to include in the project. To use this feature, run the sync. for the
-first time to have a copy of remote tables in local database and then press the "reload tables" to list tables. 
-Then add tables to selection combo using 'add' and 'add all' buttons.
+first time to have a copy of remote tables in local database and then press the "reload tables" to list tables. Then add
+tables to selection combo using 'add' and 'add all' buttons.
 
 ![](assets/dialog_table_filter.png)
 
@@ -71,9 +71,11 @@ You can find the QGIS dist packages by typing this in the QGIS python console:
 ``` python
 import qgis; print(qgis)
 ```
+
 ## Local deployment
-The script `scripts\deploy.bat` (run from root folder) installs the plugin in your local QGIS installation.
-To use this plugin you first must to configure an environ varible with the location of your QGIS profile:
+
+The script `scripts\deploy.bat` (run from root folder) installs the plugin in your local QGIS installation. To use this
+plugin you first must configure an environment variable with the location of your QGIS profile:
 
 `QGIS_PROFILE_HOME=C:/Users/<your_username>/AppData/Roaming/QGIS/QGIS3/profiles/default
 
