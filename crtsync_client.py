@@ -94,12 +94,18 @@ class CrtDrdSyncClient:
         response = requests.get(sync_uri, headers=self.credentials, verify=False)
         return response, response.json() if return_response else response
 
+    def waitFor(self, seconds):
+        end_time = time.time() + seconds
+        while time.time() < end_time:
+            pass
+
     def _check_status(self, sync_uri):
         pending = True
         init_time = time.time()
         elapsed = 0
         while pending and elapsed < self._MAX_WAIT:
-            time.sleep(self._SLEEP_TIME)
+            # time.sleep(self._SLEEP_TIME) # fails in some Window Os + QGIS versions
+            self.waitFor(self._SLEEP_TIME)
             response, content = self.get_sync_status(sync_uri, return_response=True)
             pending = response.status_code == 200 and content["state"] == "INIT"
             elapsed = time.time() - init_time

@@ -56,7 +56,7 @@ def run_sync(wks_conf: WksConfig, listener):
         # copy downloaded file to origin
         listener.info("Replacing layer with downloaded file: {}".format(wks_conf.db_file))
         shutil.copy(uncompressed_db, wks_conf.db_file)
-    except Exception as e:
+    except BaseException as e:
         listener.exception("Error during sync process.")
         raise BaseException("Error during sync process.")
 

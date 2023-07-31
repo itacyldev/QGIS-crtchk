@@ -71,6 +71,11 @@ You can find the QGIS dist packages by typing this in the QGIS python console:
 ``` python
 import qgis; print(qgis)
 ```
+## Local deployment
+The script `scripts\deploy.bat` (run from root folder) installs the plugin in your local QGIS installation.
+To use this plugin you first must to configure an environ varible with the location of your QGIS profile:
+
+`QGIS_PROFILE_HOME=C:/Users/<your_username>/AppData/Roaming/QGIS/QGIS3/profiles/default
 
 ## Publishing plugin
 
