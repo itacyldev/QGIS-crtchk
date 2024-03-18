@@ -5,6 +5,7 @@ import sys
 import tempfile
 import threading
 from zipfile import ZipFile
+from pathlib import Path
 
 from PyQt5.QtCore import QRunnable, QThreadPool
 from qgis.core import QgsTask, QgsApplication
@@ -39,6 +40,13 @@ def run_sync(wks_conf: WksConfig, listener):
     api.set_listener(listener)
 
     try:
+        # make the db file path absolute if needed (it is treated as relative to the QGIS project file)
+        if not os.path.isabs(wks_conf.db_file):
+            qgis_project_folder = get_project_folder()
+            wks_conf.db_file = os.path.abspath(os.path.join(qgis_project_folder, wks_conf.db_file))
+
+        listener.info(f"Absolute db file to synchronize: {wks_conf.db_file}")
+
         # downloaded = '/media/gus/data/cartodruid/ribera2022.zip' # mocking
         downloaded = api.exec(wks_conf.db_file)
         listener.info("Downloaded database: {}".format(downloaded))
@@ -50,8 +58,9 @@ def run_sync(wks_conf: WksConfig, listener):
         _create_db_triggers(uncompressed_db, listener)
 
         # backup original file
-        listener.info("Backing up current data base to {}".format(wks_conf.db_file + ".backup"))
-        shutil.copy(wks_conf.db_file, wks_conf.db_file + ".backup")
+        dest_file = os.path.abspath(wks_conf.db_file) + ".backup"
+        listener.info(f"Backing up current data base to {dest_file}")
+        shutil.copy(wks_conf.db_file, dest_file)
 
         # copy downloaded file to origin
         listener.info("Replacing layer with downloaded file: {}".format(wks_conf.db_file))
@@ -59,6 +68,13 @@ def run_sync(wks_conf: WksConfig, listener):
     except BaseException as e:
         listener.exception("Error during sync process.")
         raise BaseException("Error during sync process.")
+
+
+def get_project_folder():
+    from qgis.core import QgsProject
+    project_path = QgsProject.instance().fileName()
+    project_path_obj = Path(project_path)
+    return project_path_obj.parent
 
 
 def _extract(file, dest_folder):
