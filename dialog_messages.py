@@ -32,6 +32,7 @@ if os.environ.get("TEST_RUNNING", 0):
     pass
 else:
     pass
+import logging
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'dialog_messages.ui'))
 
@@ -74,7 +75,11 @@ class MessagesDialog(QtWidgets.QDialog, FORM_CLASS):
         item.setSizeHint(QtCore.QSize(0, 30))
         item.setText(msg)
         self.lstw_messages.addItem(item)
-        self.lstw_messages.scrollTo(self.lstw_messages.indexFromItem(item))
+        try:
+            QApplication.processEvents()
+            self.lstw_messages.scrollTo(self.lstw_messages.indexFromItem(item))
+        except:
+            logging.error("An error occurred while trying to scroll the window to the new message")
 
     def clear_messages(self):
         self.lstw_messages.clear()

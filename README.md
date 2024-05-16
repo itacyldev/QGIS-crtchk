@@ -46,8 +46,8 @@ list of 'magick nambes' is used `f_update, update_date, mod_date, f_actualizacio
 By default, the plugin adds all the tables contained in the downloaded database to current project (if they aren't
 already added). In case you just want to add some tables (for example just the geographic layers), you can use the **
 Table filtering screen** to restrict the tables to include in the project. To use this feature, run the sync. for the
-first time to have a copy of remote tables in local database and then press the "reload tables" to list tables. 
-Then add tables to selection combo using 'add' and 'add all' buttons.
+first time to have a copy of remote tables in local database and then press the "reload tables" to list tables. Then add
+tables to selection combo using 'add' and 'add all' buttons.
 
 ![](assets/dialog_table_filter.png)
 
@@ -55,11 +55,11 @@ Then add tables to selection combo using 'add' and 'add all' buttons.
 
 In the QGIS reference explains how to configure your IDE to refer to QGIS python packages. In this case I prefer to
 use (a .pth file)[# https://docs.python.org/3/library/site.html] to append the QGIS site-package directory to the env
-PYTTHONPATH variable. Create a qgis.pth file and copy it into `project/venv/lib/<python.version>/site-packages/` if
+PYTHONPATH variable. Create a qgis.pth file and copy it into `project/venv/lib/<python.version>/site-packages/` if
 you're working on linux or  `project/venv/Lib/site-packages/` if you're in windows, with this content:
 
 ``` shell
-# Adss QGIS instalation folder
+# Ads QGIS instalation folder
 /usr/lib/python3/dist-packages/qgis/
 
 #Or in windows something like this:
@@ -71,6 +71,13 @@ You can find the QGIS dist packages by typing this in the QGIS python console:
 ``` python
 import qgis; print(qgis)
 ```
+
+## Local deployment
+
+The script `scripts\deploy.bat` (run from root folder) installs the plugin in your local QGIS installation. To use this
+plugin you first must configure an environment variable with the location of your QGIS profile:
+
+`QGIS_PROFILE_HOME=C:/Users/<your_username>/AppData/Roaming/QGIS/QGIS3/profiles/default
 
 ## Publishing plugin
 
