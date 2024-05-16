@@ -6,6 +6,7 @@ import time
 
 import requests
 
+from .file_utils import compress_file
 from .plugin_settings import resolve_path
 
 """
@@ -45,11 +46,6 @@ class CrtDrdSyncClient:
         self._listener.info("Starting synchronization process, sending file {}".format(file))
         sync_uri = self._create_sync(file)
 
-        # push sync resources
-        # self._listener.info("Pushing files to sync_uri " + sync_uri)
-        # self.push_files(sync_uri, files)
-        # run synchronization
-
         # wait for sync to finish
         self._listener.info("Checking sync status")
         self._check_status(sync_uri)
@@ -66,13 +62,22 @@ class CrtDrdSyncClient:
 
     def _create_sync(self, file):
         if not os.path.exists(file) or not os.path.isfile(file):
-            msg = "Invalid db file path. File doesn't exists: {}".format(file)
+            msg = f"Invalid db file path. File doesn't exists: {file}"
             self._listener.exception(msg)
             raise BaseException(msg)
 
+        try:
+            zipped_file = compress_file(file)
+            self._listener.info(f"Original file compressed in {zipped_file}")
+        except Exception:
+            self._listener.error(f"There was an error trying to zip the file: {zipped_file}")
+            # fallback
+            self._listener.info(f"Trying to send original file unzipped: {file}")
+            zipped_file = file
+
         url = self.endpoint + "cnt/rest/syncro/"
-        file_params = {"contentFile": open(file, 'rb')}
-        self._listener.info("Starting synchronization against url {}".format(url))
+        file_params = {"contentFile": open(zipped_file, 'rb')}
+        self._listener.info(f"Starting synchronization against url {url}")
 
         try:
             response = requests.post(url, files=file_params, headers=self.credentials, verify=False)

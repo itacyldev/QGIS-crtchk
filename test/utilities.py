@@ -6,6 +6,7 @@ import sys
 import logging
 import tempfile
 import traceback
+import zipfile
 from pathlib import Path
 import random
 
